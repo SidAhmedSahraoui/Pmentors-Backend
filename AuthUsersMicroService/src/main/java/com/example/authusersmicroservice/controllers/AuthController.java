@@ -1,19 +1,25 @@
 package com.example.authusersmicroservice.controllers;
 
-import com.example.authusersmicroservice.models.UserRegister;
+import com.example.authusersmicroservice.models.UserRegisterRequest;
 import com.example.authusersmicroservice.services.RegistrationService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.AllArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/")
+@RequestMapping(path = "api/auth")
+@AllArgsConstructor
 public class AuthController {
-    private RegistrationService registrationService;
 
-    @PostMapping("/")
-    public String register(@RequestBody UserRegister userRegister){
-        return "registrationService.register(userRegister);";
+    private final RegistrationService registrationService;
+
+    @PostMapping("/register")
+    public String register(@RequestBody UserRegisterRequest request) {
+        return registrationService.register(request);
     }
+
+    @GetMapping(path = "/confirm")
+    public String confirm(@RequestParam("token") String token) {
+        return registrationService.confirmToken(token);
+    }
+
 }
