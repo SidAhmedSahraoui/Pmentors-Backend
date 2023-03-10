@@ -1,4 +1,4 @@
-package com.example.authusersmicroservice.security.config;
+package com.example.authusersmicroservice.security;
 
 import com.example.authusersmicroservice.repositories.TokenRepository;
 import jakarta.servlet.http.HttpServletRequest;

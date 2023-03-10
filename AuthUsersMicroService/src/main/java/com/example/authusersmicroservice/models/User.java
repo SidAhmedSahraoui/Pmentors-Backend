@@ -1,57 +1,48 @@
 package com.example.authusersmicroservice.models;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 @Data
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
-
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID userId;
 
-    @Column(nullable = false, unique = true)
+    @Column(unique = true, nullable = false)
     private String username;
 
-    @Column(nullable = false)
-    private String firstName;
-
-    @Column(nullable = false)
-    private String lastName;
-
-    @Column(nullable = false, unique = true)
+    @Column(unique = true, nullable = false)
     private String email;
+
+    private String firstName;
+    private String lastName;
+    private Integer phone;
 
     @Column(nullable = false)
     private String password;
 
-    private Date birthDate;
-    private String phone;
-
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private Role role;
 
-    private boolean locked;
-    private boolean enabled;
-
-
     @OneToMany(mappedBy = "user")
-    private List<Token> tokens;
-
-    @OneToMany(mappedBy = "user")
-    private List<ConfirmationToken> confirmationTokens;
+    private List<ConfirmationToken> tokens;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -60,7 +51,6 @@ public class User implements UserDetails {
         return Collections.singletonList(authority);
     }
 
-
     @Override
     public boolean isAccountNonExpired() {
         return true;
@@ -68,7 +58,7 @@ public class User implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return !locked;
+        return true;
     }
 
     @Override
@@ -78,15 +68,14 @@ public class User implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return enabled;
+        return true;
     }
-
-    public User( String username,
-                 String firstName,
-                 String lastName,
-                 String email,
-                 String password,
-                 Role role) {
+    public User(String username,
+                String firstName,
+                String lastName,
+                String email,
+                String password,
+                Role role) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;

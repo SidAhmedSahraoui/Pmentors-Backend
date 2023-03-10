@@ -1,22 +1,21 @@
 package com.example.authusersmicroservice.models;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Getter
-@Setter
+@Data
+@AllArgsConstructor
 @NoArgsConstructor
 @Entity
 public class ConfirmationToken {
 
     @Id
-    @GeneratedValue(
-            strategy = GenerationType.UUID
-    )
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID confirmationTokenId;
 
     @Column(nullable = false)
@@ -31,11 +30,9 @@ public class ConfirmationToken {
     private LocalDateTime confirmedAt;
 
     @ManyToOne
-    @JoinColumn(
-            nullable = false,
-            name = "user_id"
-    )
+    @JoinColumn(nullable = false, name = "user_id")
     private User user;
+
 
     public ConfirmationToken(String token,
                              LocalDateTime createdAt,
@@ -47,4 +44,3 @@ public class ConfirmationToken {
         this.user = user;
     }
 }
-

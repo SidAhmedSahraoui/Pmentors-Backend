@@ -1,7 +1,7 @@
 package com.example.authusersmicroservice.models;
 
 public enum Role {
-    CLIENT,
+    USER,
     PROVIDER,
     ADMIN
 }

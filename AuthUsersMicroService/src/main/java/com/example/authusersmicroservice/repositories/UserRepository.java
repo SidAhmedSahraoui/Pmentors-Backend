@@ -10,13 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 import java.util.UUID;
 
+@Transactional
 @Repository
 public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByEmail(String email);
     Optional<User> findByUsername(String username);
-    @Transactional
-    @Modifying
-    @Query("UPDATE User a " +
-            "SET a.enabled = TRUE WHERE a.email = ?1")
-    int enableUser(String email);
+
+    boolean existsByEmail(String email);
+    boolean existsByUsername(String username);
+
 }

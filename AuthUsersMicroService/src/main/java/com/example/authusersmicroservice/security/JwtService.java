@@ -1,4 +1,4 @@
-package com.example.authusersmicroservice.security.config;
+package com.example.authusersmicroservice.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

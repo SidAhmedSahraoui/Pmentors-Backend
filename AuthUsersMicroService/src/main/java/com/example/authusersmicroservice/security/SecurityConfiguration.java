@@ -1,4 +1,4 @@
-package com.example.authusersmicroservice.security.config;
+package com.example.authusersmicroservice.security;
 
 import jakarta.servlet.Filter;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ public class SecurityConfiguration {
                 .csrf()
                 .disable()
                 .authorizeHttpRequests()
-                .requestMatchers("/api/auth/**")
+                .requestMatchers("/api/v1/auth/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated()
@@ -39,7 +39,7 @@ public class SecurityConfiguration {
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .logout()
-                .logoutUrl("/api/auth/logout")
+                .logoutUrl("/api/v1/auth/logout")
                 .addLogoutHandler(logoutHandler)
                 .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
         ;
@@ -47,5 +47,4 @@ public class SecurityConfiguration {
         return http.build();
     }
 }
-
 

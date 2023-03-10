@@ -2,6 +2,7 @@ package com.example.authusersmicroservice.services;
 
 import com.example.authusersmicroservice.models.ConfirmationToken;
 import com.example.authusersmicroservice.models.User;
+import com.example.authusersmicroservice.repositories.ConfirmationTokenRepository;
 import com.example.authusersmicroservice.repositories.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,7 +23,7 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final ConfirmationTokenService confirmationTokenService;
+    private final ConfirmationTokenRepository confirmationTokenRepository;
 
     @Override
     public UserDetails loadUserByUsername(String email)
@@ -35,8 +36,7 @@ public class UserService implements UserDetailsService {
 
     public String signUpUser(User user) {
         boolean userExists = userRepository
-                .findByEmail(user.getEmail())
-                .isPresent();
+                .existsByEmail(user.getEmail()) || userRepository.existsByUsername(user.getUsername());
 
         if (userExists) {
             // TODO check of attributes are the same and
@@ -50,7 +50,6 @@ public class UserService implements UserDetailsService {
 
         user.setPassword(encodedPassword);
 
-
         userRepository.save(user);
 
         String token = UUID.randomUUID().toString();
@@ -62,16 +61,11 @@ public class UserService implements UserDetailsService {
                 user
         );
 
-        confirmationTokenService.saveConfirmationToken(
-                confirmationToken);
+        confirmationTokenRepository.save(confirmationToken);
 
-        //        TODO: SEND EMAIL
+//        TODO: SEND EMAIL
 
         return token;
     }
 
-    public int enableAppUser(String email) {
-        return userRepository.enableUser(email);
-    }
 }
-
