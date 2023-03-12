@@ -3,8 +3,12 @@ package com.example.authusersmicroservice.services;
 import com.example.authusersmicroservice.models.*;
 import com.example.authusersmicroservice.repositories.TokenRepository;
 import com.example.authusersmicroservice.repositories.UserRepository;
+import com.example.authusersmicroservice.response.AuthResponse;
+import com.example.authusersmicroservice.response.LoginRequest;
+import com.example.authusersmicroservice.response.RegisterRequest;
 import com.example.authusersmicroservice.security.JwtService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -13,10 +17,15 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+    @Autowired
     private final UserRepository repository;
+    @Autowired
     private final TokenRepository tokenRepository;
+    @Autowired
     private final PasswordEncoder passwordEncoder;
+    @Autowired
     private final JwtService jwtService;
+    @Autowired
     private final AuthenticationManager authenticationManager;
 
     public AuthResponse register(RegisterRequest request) {

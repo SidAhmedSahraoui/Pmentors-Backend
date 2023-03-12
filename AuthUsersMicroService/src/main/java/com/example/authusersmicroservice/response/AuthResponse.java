@@ -1,4 +1,4 @@
-package com.example.authusersmicroservice.models;
+package com.example.authusersmicroservice.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +9,8 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginRequest {
+public class AuthResponse {
 
-    private String email;
-    private String password;
+    private String token;
 }
 

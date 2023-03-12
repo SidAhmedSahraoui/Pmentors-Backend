@@ -2,7 +2,7 @@ server:
   error:
     include-message: always
     include-binding-errors: always
-  port: 8888
+  port: 8080
 
 spring:
   main:

@@ -1,4 +1,4 @@
-package com.example.authusersmicroservice.models;
+package com.example.authusersmicroservice.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,9 +12,10 @@ import lombok.NoArgsConstructor;
 public class RegisterRequest {
 
     private String username;
+    private String email;
     private String firstname;
     private String lastname;
-    private String email;
+    private Integer phone;
     private String password;
 }
 
