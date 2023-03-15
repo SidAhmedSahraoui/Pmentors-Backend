@@ -1,0 +1,44 @@
+server:
+  port: 7777
+
+spring:
+  application:
+    name: Gateway
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "http://localhost:3000"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+      routes:
+        - id: Ath-Service
+          uri: lb://auth-service
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - RewritePath=/api/auth/(?<s>.*), /${s}
+
+        - id: Interview-Service
+          uri: lb://interview-service
+          predicates:
+            - Path=/interview/**
+          filters:
+            - RewritePath=/interview/(?<s>.*), /${s}
+
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8888/eureka/
+  instance:
+    hostname: localhost
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
