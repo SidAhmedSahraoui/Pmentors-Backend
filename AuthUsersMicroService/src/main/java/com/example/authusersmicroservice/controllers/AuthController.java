@@ -1,7 +1,6 @@
 package com.example.authusersmicroservice.controllers;
 
 import com.example.authusersmicroservice.exceptions.AuthException;
-import com.example.authusersmicroservice.response.AuthResponse;
 import com.example.authusersmicroservice.response.LoginRequest;
 import com.example.authusersmicroservice.response.RegisterRequest;
 import com.example.authusersmicroservice.services.AuthService;
@@ -20,25 +19,18 @@ public class AuthController {
     private final AuthService service;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(
+    public ResponseEntity<Object> register(
             @RequestBody RegisterRequest request
-    ) throws AuthException {
-        try{
-            return ResponseEntity.ok(service.register(request));
-        } catch (Exception e) {
-            throw new AuthException("Bad Credentials", e);
-        }
+    ) {
+        return service.register(request);
     }
     @PostMapping("/login")
-    public ResponseEntity<AuthResponse> authenticate(
+    public ResponseEntity<Object> authenticate(
             @RequestBody LoginRequest request
     ) {
-        try {
-            return ResponseEntity.ok(service.authenticate(request));
-        }catch (Exception e){
-            throw new AuthException("Yooow", e);
-        }
-        }
+        return service.authenticate(request);
+    }
+
     @ExceptionHandler({AuthException.class})
     public ResponseEntity<String> handleAuthException(AuthException e){
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());

@@ -4,6 +4,7 @@ import com.example.authusersmicroservice.response.RegisterRequest;
 import com.example.authusersmicroservice.services.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,7 +18,8 @@ public class AdminController {
     private final AdminService adminService;
 
     @PostMapping
-    public String addProvider(@RequestBody RegisterRequest request){
+    public ResponseEntity<Object> addProvider(@RequestBody RegisterRequest request){
+
         return adminService.createProvider(request);
     }
 }

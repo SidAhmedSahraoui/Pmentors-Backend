@@ -1,5 +1,6 @@
 package com.example.authusersmicroservice.services;
 
+import com.example.authusersmicroservice.exceptions.ApiError;
 import com.example.authusersmicroservice.models.*;
 import com.example.authusersmicroservice.repositories.TokenRepository;
 import com.example.authusersmicroservice.repositories.UserRepository;
@@ -9,10 +10,15 @@ import com.example.authusersmicroservice.response.RegisterRequest;
 import com.example.authusersmicroservice.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 
 @Service
 @RequiredArgsConstructor
@@ -28,7 +34,20 @@ public class AuthService {
     @Autowired
     private final AuthenticationManager authenticationManager;
 
-    public AuthResponse register(RegisterRequest request) {
+    public ResponseEntity<Object> register(RegisterRequest request) {
+        if(repository.existsByUsername(request.getUsername()) ||
+                repository.existsByEmail(request.getEmail())){
+            String error = "Email or Username already exists";
+            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Invalid Credentials",error);
+            return new ResponseEntity<Object>(
+                    apiError, new HttpHeaders(), apiError.getStatus());
+        }
+        if(request.getPassword().length() < 8){
+            String error = "Password too short";
+            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Password too short",error);
+            return new ResponseEntity<Object>(
+                    apiError, new HttpHeaders(), apiError.getStatus());
+        }
         var user = User.builder()
                 .username(request.getUsername())
                 .firstName(request.getFirstname())
@@ -40,26 +59,46 @@ public class AuthService {
         var savedUser = repository.save(user);
         var jwtToken = jwtService.generateToken(user);
         saveUserToken(savedUser, jwtToken);
-        return AuthResponse.builder()
+        return new ResponseEntity<Object>(AuthResponse.builder()
                 .token(jwtToken)
-                .build();
+                .build(), new HttpHeaders(), HttpStatus.OK);
     }
 
-    public AuthResponse authenticate(LoginRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        request.getEmail(),
-                        request.getPassword()
-                )
-        );
-        var user = repository.findByEmail(request.getEmail())
-                .orElseThrow();
-        var jwtToken = jwtService.generateToken(user);
-        revokeAllUserTokens(user);
-        saveUserToken(user, jwtToken);
-        return AuthResponse.builder()
-                .token(jwtToken)
-                .build();
+    public ResponseEntity<Object> authenticate(LoginRequest request) {
+        try{
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
+        }catch (BadCredentialsException e){
+            System.out.println(e);
+        }
+
+      if(repository.existsByUsername(request.getEmail()) ||
+          repository.existsByEmail(request.getEmail())){
+          var user = repository.findUserByEmailOrUsername(request.getEmail())
+                  .orElseThrow();
+          if(passwordEncoder.matches(request.getPassword(),user.getPassword())){
+              var jwtToken = jwtService.generateToken(user);
+              revokeAllUserTokens(user);
+              saveUserToken(user, jwtToken);
+              return new ResponseEntity<>(AuthResponse.builder()
+                      .token(jwtToken)
+                      .build(), new HttpHeaders(), HttpStatus.OK);
+          } else {
+          String error = "Password Incorrect";
+          ApiError apiError = new ApiError(HttpStatus.UNAUTHORIZED, "Password Incorrect",error);
+          return new ResponseEntity<Object>(
+                  apiError, new HttpHeaders(), apiError.getStatus());
+      }
+      }else {
+          String error = "User not exists";
+          ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Invalid Credentials",error);
+          return new ResponseEntity<Object>(
+                  apiError, new HttpHeaders(), apiError.getStatus());
+      }
     }
 
     private void saveUserToken(User user, String jwtToken) {
