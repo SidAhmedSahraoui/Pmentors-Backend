@@ -4,7 +4,19 @@ server:
     include-binding-errors: always
   port: 8080
 
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8888/eureka/
+  instance:
+    hostname: localhost
+
 spring:
+  application:
+    name: Auth-Service
   main:
     allow-bean-definition-overriding: true
   datasource:
