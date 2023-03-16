@@ -11,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.UUID;
 
 @Data
@@ -41,11 +40,11 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToMany(mappedBy = "user")
-    private List<ConfirmationToken> tokens;
-
     private Boolean locked = false;
     private Boolean enabled = false;
+
+    /*@OneToMany(mappedBy = "user")
+    private ArrayList<Token> tokens;*/
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

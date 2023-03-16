@@ -17,7 +17,7 @@ public class AdminController {
     @Autowired
     private final AdminService adminService;
 
-    @PostMapping
+    @PostMapping("/create-provider")
     public ResponseEntity<Object> addProvider(@RequestBody RegisterRequest request){
 
         return adminService.createProvider(request);
