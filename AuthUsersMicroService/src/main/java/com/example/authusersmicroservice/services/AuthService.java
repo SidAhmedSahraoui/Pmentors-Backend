@@ -19,6 +19,9 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.regex.Pattern;
+
 
 @Service
 @RequiredArgsConstructor
@@ -42,9 +45,32 @@ public class AuthService {
             return new ResponseEntity<Object>(
                     apiError, new HttpHeaders(), apiError.getStatus());
         }
+        if(repository.existsByPhone(request.getPhone())){
+            String error = "Phone number already exists";
+            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Invalid Credentials",error);
+            return new ResponseEntity<Object>(
+                    apiError, new HttpHeaders(), apiError.getStatus());
+        }
+
+        ArrayList<String> errors = new ArrayList<>();
+
         if(request.getPassword().length() < 8){
-            String error = "Password too short";
-            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Password too short",error);
+            errors.add("Password too short");
+        }
+        if(!Pattern
+                .compile("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$")
+                .matcher(request.getPassword())
+                .find()){
+            errors.add("Password should contain at least one uppercase letter, one lowercase letter, one digit and one special character.");
+        }
+        if(!Pattern
+                .compile("^(.+)@(\\S+)$")
+                .matcher(request.getEmail())
+                .find()){
+            errors.add("Email is not correct");
+        }
+        if(!errors.isEmpty()){
+            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Invalid Credentials",errors);
             return new ResponseEntity<Object>(
                     apiError, new HttpHeaders(), apiError.getStatus());
         }
@@ -53,6 +79,7 @@ public class AuthService {
                 .firstName(request.getFirstname())
                 .lastName(request.getLastname())
                 .email(request.getEmail())
+                .phone(request.getPhone())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
                 .build();
@@ -68,7 +95,7 @@ public class AuthService {
         try{
             authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(
-                            request.getEmail(),
+                            request.getCredential(),
                             request.getPassword()
                     )
             );
@@ -76,9 +103,10 @@ public class AuthService {
             System.out.println(e);
         }
 
-      if(repository.existsByUsername(request.getEmail()) ||
-          repository.existsByEmail(request.getEmail())){
-          var user = repository.findUserByEmailOrUsername(request.getEmail())
+      if(repository.existsByUsername(request.getCredential()) ||
+          repository.existsByEmail(request.getCredential()) ||
+            repository.existsByPhone(request.getCredential())){
+          var user = repository.findUserByEmailOrUsernameOrPhone(request.getCredential())
                   .orElseThrow();
           if(passwordEncoder.matches(request.getPassword(),user.getPassword())){
               var jwtToken = jwtService.generateToken(user);

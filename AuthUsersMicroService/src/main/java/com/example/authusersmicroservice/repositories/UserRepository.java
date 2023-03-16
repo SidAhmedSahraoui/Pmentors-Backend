@@ -15,10 +15,11 @@ import java.util.UUID;
 public interface UserRepository extends JpaRepository<User, UUID> {
     Optional<User> findByEmail(String email);
     Optional<User> findByUsername(String username);
-    @Query("select u from User u where u.email = ?1 or u.username = ?1")
-    Optional<User> findUserByEmailOrUsername(String email);
+    @Query("select u from User u where u.email = ?1 or u.username = ?1 or u.phone = ?1")
+    Optional<User> findUserByEmailOrUsernameOrPhone(String credential);
     boolean existsByEmail(String email);
     boolean existsByUsername(String username);
+    boolean existsByPhone(String phone);
     @Transactional
     @Modifying
     @Query("UPDATE User a " +
