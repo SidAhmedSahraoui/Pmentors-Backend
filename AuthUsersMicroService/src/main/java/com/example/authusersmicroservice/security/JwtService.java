@@ -13,7 +13,7 @@ import java.util.*;
 @Service
 public class JwtService {
 
-    private String jwtSecret = "jwtSecret";
+    private String jwtSecret = "jwtSuperSecretCreatedBySidAhmedSahraoui20002022jwtSuperSecretCreatedBySidAhmedSahraoui20002022jwtSuperSecretCreatedBySidAhmedSahraoui20002022";
     private int jwtExpiration = 60 * 60 * 24 * 3600;
 
 
@@ -27,7 +27,7 @@ public class JwtService {
         if (roles.contains(new SimpleGrantedAuthority("ADMIN"))) {
             claims.put("isAdmin", true);
         }
-        if (roles.contains(new SimpleGrantedAuthority("PROVODER"))) {
+        if (roles.contains(new SimpleGrantedAuthority("PROVIDER"))) {
             claims.put("isProvider", true);
         }
         return doGenerateToken(claims, userDetails.getUsername());

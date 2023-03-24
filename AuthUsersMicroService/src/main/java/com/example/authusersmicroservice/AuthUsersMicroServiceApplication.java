@@ -1,7 +1,9 @@
 package com.example.authusersmicroservice;
 
-import com.example.authusersmicroservice.models.Role;
-import com.example.authusersmicroservice.models.User;
+import com.example.authusersmicroservice.models.*;
+import com.example.authusersmicroservice.repositories.AdminRepository;
+import com.example.authusersmicroservice.repositories.CategoryRepository;
+import com.example.authusersmicroservice.repositories.ProviderRepository;
 import com.example.authusersmicroservice.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
@@ -18,6 +20,15 @@ public class AuthUsersMicroServiceApplication implements CommandLineRunner {
     private UserRepository userRepository;
 
     @Autowired
+    private AdminRepository adminRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
+    private ProviderRepository providerRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     public static void main(String[] args) {
@@ -26,12 +37,21 @@ public class AuthUsersMicroServiceApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-            userRepository.save(
+
+        Category category1 =
+                categoryRepository.save(
+                        new Category(null,
+                                "Campus France",
+                                "Preparation aux entretiens de démarche de programme campus france ",
+                                null));
+            User savedUser1 = userRepository.save(
                     new User("Admin",
                             "admin",
                             "admin",
                             "admin@admin.com",
                             passwordEncoder.encode("AdminPass123"),
                             Role.ADMIN));
+            adminRepository.save(new Admin(null,savedUser1));
+            providerRepository.save(new Provider(null,savedUser1,category1));
     }
 }

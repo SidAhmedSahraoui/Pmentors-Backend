@@ -45,7 +45,9 @@ public class AuthService {
             return new ResponseEntity<Object>(
                     apiError, new HttpHeaders(), apiError.getStatus());
         }
-        if(repository.existsByPhone(request.getPhone())){
+        if(repository.existsByPhone(request.getPhone()) &&
+                !request.getPhone().isEmpty() &&
+                !request.getPhone().isBlank()){
             String error = "Phone number already exists";
             ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Invalid Credentials",error);
             return new ResponseEntity<Object>(

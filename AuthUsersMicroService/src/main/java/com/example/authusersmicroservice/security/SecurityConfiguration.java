@@ -1,6 +1,5 @@
 package com.example.authusersmicroservice.security;
 
-import com.example.authusersmicroservice.models.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

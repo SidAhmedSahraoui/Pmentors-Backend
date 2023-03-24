@@ -43,9 +43,6 @@ public class User implements UserDetails {
     private Boolean locked = false;
     private Boolean enabled = false;
 
-    /*@OneToMany(mappedBy = "user")
-    private ArrayList<Token> tokens;*/
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         SimpleGrantedAuthority authority =
