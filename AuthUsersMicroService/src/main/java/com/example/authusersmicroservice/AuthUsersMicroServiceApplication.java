@@ -45,7 +45,7 @@ public class AuthUsersMicroServiceApplication implements CommandLineRunner {
                                 "Preparation aux entretiens de démarche de programme campus france ",
                                 null));
             User savedUser1 = userRepository.save(
-                    new User("Admin",
+                    new User("admin",
                             "admin",
                             "admin",
                             "admin@admin.com",
