@@ -6,7 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.UUID;
 
 @Data
@@ -28,6 +28,6 @@ public class Category {
     private String description;
 
     @OneToMany
-    private ArrayList<Provider> providers;
+    private Collection<Provider> providers;
 
 }

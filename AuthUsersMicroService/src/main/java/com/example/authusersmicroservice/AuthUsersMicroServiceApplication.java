@@ -12,6 +12,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.ArrayList;
+
 @SpringBootApplication
 @EnableDiscoveryClient
 public class AuthUsersMicroServiceApplication implements CommandLineRunner {

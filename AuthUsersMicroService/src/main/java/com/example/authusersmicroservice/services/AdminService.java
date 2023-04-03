@@ -20,6 +20,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -71,7 +72,8 @@ public class AdminService {
                         .user(user)
                         .category(category)
                                 .build();
-        providerRepository.save(provider);
+        Provider savedProvider = providerRepository.save(provider);
+        //category.getProviders().add(savedProvider);
         return new ResponseEntity<Object>(new ApiResponse(HttpStatus.OK, "Provider added"), new HttpHeaders(), HttpStatus.OK);
     }
     public ResponseEntity<Object> deleteProvider(UUID providerId) {
@@ -81,28 +83,13 @@ public class AdminService {
             return new ResponseEntity<Object>(
                     apiError, new HttpHeaders(), apiError.getStatus());
         }
-        providerRepository.deleteByProviderId(providerId);
+        providerRepository.deleteById(providerId);
         return new ResponseEntity<Object>(new ApiResponse(HttpStatus.OK, "Provider removed"), new HttpHeaders(), HttpStatus.OK);
 
     }
 
     public  ResponseEntity<Object> upgradeProvider(UpgradeProviderRequest request) {
-        if(!userRepository.existsById(request.getUserId())){
-            String error = "User not found";
-            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Invalid Credentials",error);
-            return new ResponseEntity<Object>(
-                    apiError, new HttpHeaders(), apiError.getStatus());
-        }
-        if(!categoryRepository.existsByTitle(request.getCategoryTitle())){
-            String error = "Category not found";
-            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Invalid Credentials",error);
-            return new ResponseEntity<Object>(
-                    apiError, new HttpHeaders(), apiError.getStatus());
-        }
-        User user = userRepository.findUserByUserId(request.getUserId());
 
-        Category category = categoryRepository.findByTitle(request.getCategoryTitle());
-        providerRepository.save(new Provider(null,user,category));
         return new ResponseEntity<Object>(new ApiResponse(HttpStatus.OK, "User upgraded to Provider"), new HttpHeaders(), HttpStatus.OK);
 
     }
@@ -129,23 +116,7 @@ public class AdminService {
     }
 
     public ResponseEntity<Object> editCategory(CategoryRequest request){
-        if(categoryRepository.existsByTitle(request.getTitle())){
-            String error = "Category title already exists";
-            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Invalid Credentials",error);
-            return new ResponseEntity<Object>(
-                    apiError, new HttpHeaders(), apiError.getStatus());
-        }
-        if(request.getTitle().isEmpty() || request.getTitle().isBlank() || request.getDescription().isBlank() || request.getDescription().isEmpty()){
-            String error = "Title or description is empty";
-            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Invalid Credentials",error);
-            return new ResponseEntity<Object>(
-                    apiError, new HttpHeaders(), apiError.getStatus());
-        }
-        var category = Category.builder()
-                .title(request.getTitle())
-                .description(request.getDescription())
-                .build();
-        categoryRepository.save(category);
+
         return new ResponseEntity<Object>(new ApiResponse(HttpStatus.OK, "Category added"), new HttpHeaders(), HttpStatus.OK);
 
     }
