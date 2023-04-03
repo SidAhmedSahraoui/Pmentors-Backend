@@ -13,12 +13,6 @@
         <module name="InterviewMicroService" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="AuthUsersMicroService" target="17" />
-      <module name="Gateway" target="17" />
-      <module name="InterviewMicroService" target="17" />
-      <module name="Registry" target="17" />
-    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">

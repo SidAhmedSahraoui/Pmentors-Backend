@@ -7,4 +7,6 @@ import java.util.UUID;
 
 public interface ProviderRepository extends JpaRepository<Provider, UUID> {
 
+    boolean deleteByProviderId(UUID providerId);
+
 }

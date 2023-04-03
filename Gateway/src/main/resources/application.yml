@@ -27,11 +27,11 @@ spring:
           filters:
             - RewritePath=/api/interview/(?<s>.*), /${s}
 
-  security:
-    oauth2:
-      resourceserver:
-        jwt:
-          issuer-uri: http://localhost:8181/realms/spring-boot-micro-services-realm
+#  security:
+ #  oauth2:
+ #     resourceserver:
+  #      jwt:
+   #       issuer-uri: http://localhost:8181/realms/spring-boot-micro-services-realm
 
 
 
