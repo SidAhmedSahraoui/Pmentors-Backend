@@ -20,8 +20,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -73,7 +71,6 @@ public class AdminService {
                         .category(category)
                                 .build();
         Provider savedProvider = providerRepository.save(provider);
-        //category.getProviders().add(savedProvider);
         return new ResponseEntity<Object>(new ApiResponse(HttpStatus.OK, "Provider added"), new HttpHeaders(), HttpStatus.OK);
     }
     public ResponseEntity<Object> deleteProvider(UUID providerId) {
@@ -89,8 +86,17 @@ public class AdminService {
     }
 
     public  ResponseEntity<Object> upgradeProvider(UpgradeProviderRequest request) {
-
-        return new ResponseEntity<Object>(new ApiResponse(HttpStatus.OK, "User upgraded to Provider"), new HttpHeaders(), HttpStatus.OK);
+        if(!categoryRepository.existsByTitle(request.getCategoryTitle())){
+            return new ResponseEntity<Object>(new ApiResponse(HttpStatus.BAD_REQUEST, "Category not found"), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+        }
+        if(!providerRepository.existsById(request.getUserId())){
+            return new ResponseEntity<Object>(new ApiResponse(HttpStatus.NOT_FOUND, "Provider not found"), new HttpHeaders(), HttpStatus.NOT_FOUND);
+        }
+        Provider provider = providerRepository.findById(request.getUserId()).get();
+        Category category = categoryRepository.findByTitle(request.getCategoryTitle());
+        provider.setCategory(category);
+        providerRepository.save(provider);
+        return new ResponseEntity<Object>(new ApiResponse(HttpStatus.OK, "Provider category updated"), new HttpHeaders(), HttpStatus.OK);
 
     }
     public ResponseEntity<Object> addCategory(CategoryRequest request){
