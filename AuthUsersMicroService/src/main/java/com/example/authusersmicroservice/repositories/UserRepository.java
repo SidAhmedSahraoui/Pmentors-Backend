@@ -13,9 +13,9 @@ import java.util.UUID;
 
 @Transactional
 @Repository
-public interface UserRepository extends JpaRepository<User, UUID> {
+public interface UserRepository extends JpaRepository<User, Long> {
 
-    User findUserByUserId(UUID id);
+    User findUserByUserId(Long id);
     Optional<User> findByEmail(String email);
     Optional<User> findByUsername(String username);
     @Query("select u from User u where u.email = ?1 or u.username = ?1 or u.phone = ?1")
@@ -23,6 +23,8 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     boolean existsByEmail(String email);
     boolean existsByUsername(String username);
     boolean existsByPhone(String phone);
+    @Modifying
+    @Query("delete from User u where u.username = :username")
     void deleteUserByUsername(@Param("username") String username);
     @Transactional
     @Modifying

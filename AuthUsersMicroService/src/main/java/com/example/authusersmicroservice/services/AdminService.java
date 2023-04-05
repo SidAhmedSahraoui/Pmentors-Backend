@@ -2,10 +2,7 @@ package com.example.authusersmicroservice.services;
 
 import com.example.authusersmicroservice.exceptions.ApiError;
 import com.example.authusersmicroservice.exceptions.ApiResponse;
-import com.example.authusersmicroservice.models.Category;
-import com.example.authusersmicroservice.models.Provider;
-import com.example.authusersmicroservice.models.Role;
-import com.example.authusersmicroservice.models.User;
+import com.example.authusersmicroservice.models.*;
 import com.example.authusersmicroservice.repositories.CategoryRepository;
 import com.example.authusersmicroservice.repositories.ProviderRepository;
 import com.example.authusersmicroservice.repositories.UserRepository;
@@ -14,13 +11,15 @@ import com.example.authusersmicroservice.response.CreateProviderRequest;
 import com.example.authusersmicroservice.response.UpgradeProviderRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -36,26 +35,49 @@ public class AdminService {
 
     public ResponseEntity<Object> createProvider(CreateProviderRequest request) {
 
+        ArrayList<String> errors = new ArrayList<>();
+
         boolean existUser = userRepository.existsByUsername(request.getUsername()) ||
                 userRepository.existsByEmail(request.getEmail());
+
         if(existUser){
-            String error = "Email or Username already exists";
-            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Invalid Credentials",error);
-            return new ResponseEntity<Object>(
-                    apiError, new HttpHeaders(), apiError.getStatus());
+            errors.add("Username or Email already taken");
         }
+
+        if(userRepository.existsByPhone(request.getPhone()) &&
+                !request.getPhone().isEmpty() &&
+                !request.getPhone().isBlank()) {
+            errors.add("Phone number already exists");
+        }
+
         if(request.getPassword().length() < 8){
-            String error = "Password too short";
-            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Password too short",error);
-            return new ResponseEntity<Object>(
-                    apiError, new HttpHeaders(), apiError.getStatus());
+            errors.add("Password too short");
         }
+
+        if(!Pattern
+                .compile("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$")
+                .matcher(request.getPassword())
+                .find()){
+            errors.add("Password should contain at least one uppercase letter, one lowercase letter, one digit and one special character.");
+        }
+
+        if(!Pattern
+                .compile("^(.+)@(\\S+)$")
+                .matcher(request.getEmail())
+                .find()){
+            errors.add("Email is not correct");
+        }
+
         if(!categoryRepository.existsByTitle(request.getCategoryTitle())){
-            String error = "Category not found";
-            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Category not found",error);
+            errors.add("Category not found");
+        }
+
+        if(!errors.isEmpty()){
+            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Invalid Credentials",errors);
             return new ResponseEntity<Object>(
                     apiError, new HttpHeaders(), apiError.getStatus());
         }
+
         var user = User.builder()
                 .username(request.getUsername())
                 .firstName(request.getFirstname())
@@ -64,16 +86,29 @@ public class AdminService {
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.PROVIDER)
                 .build();
-        userRepository.save(user);
+        try{
+            userRepository.save(user);
+        } catch (Exception e){
+            System.out.println(e);
+            return new ResponseEntity<Object>(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error"), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+
+        }
+
         Category category = categoryRepository.findByTitle(request.getCategoryTitle());
+
         var provider = Provider.builder()
                         .user(user)
                         .category(category)
                                 .build();
-        Provider savedProvider = providerRepository.save(provider);
-        return new ResponseEntity<Object>(new ApiResponse(HttpStatus.OK, "Provider added"), new HttpHeaders(), HttpStatus.OK);
+        try {
+            providerRepository.save(provider);
+        }catch (Exception e){
+            System.out.println(e);
+            return new ResponseEntity<Object>(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error"), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return new ResponseEntity<Object>(new ApiResponse(HttpStatus.OK, "Provider account added"), new HttpHeaders(), HttpStatus.OK);
     }
-    public ResponseEntity<Object> deleteProvider(UUID providerId) {
+    public ResponseEntity<Object> deleteProvider(Long providerId) {
         if (!providerRepository.existsById(providerId)){
             String error = "Provider not found";
             ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Invalid Credentials",error);
@@ -89,41 +124,100 @@ public class AdminService {
         if(!categoryRepository.existsByTitle(request.getCategoryTitle())){
             return new ResponseEntity<Object>(new ApiResponse(HttpStatus.BAD_REQUEST, "Category not found"), new HttpHeaders(), HttpStatus.BAD_REQUEST);
         }
-        if(!providerRepository.existsById(request.getUserId())){
-            return new ResponseEntity<Object>(new ApiResponse(HttpStatus.NOT_FOUND, "Provider not found"), new HttpHeaders(), HttpStatus.NOT_FOUND);
+        if(userRepository.existsByUsername(request.getUsername())){
+           User user = userRepository.findByUsername(request.getUsername()).get();
+           if(user.getRole().equals(Role.PROVIDER) || providerRepository.existsByUser(user)){
+               return new ResponseEntity<Object>(new ApiResponse(HttpStatus.BAD_REQUEST, "Already provider"), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+           }
+           user.setRole(Role.PROVIDER);
+           Category category = categoryRepository.findByTitle(request.getCategoryTitle());
+           try{
+               userRepository.save(user);
+               providerRepository.save(new Provider(null,user,category));
+               return new ResponseEntity<Object>(new ApiResponse(HttpStatus.OK, "User account upgraded to provider"), new HttpHeaders(), HttpStatus.OK);
+           }catch (Exception e){
+               System.out.println(e);
+               return new ResponseEntity<Object>(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error"), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+           }
         }
-        Provider provider = providerRepository.findById(request.getUserId()).get();
-        Category category = categoryRepository.findByTitle(request.getCategoryTitle());
-        provider.setCategory(category);
-        providerRepository.save(provider);
-        return new ResponseEntity<Object>(new ApiResponse(HttpStatus.OK, "Provider category updated"), new HttpHeaders(), HttpStatus.OK);
+
+        return new ResponseEntity<Object>(new ApiResponse(HttpStatus.NOT_FOUND, "User not found"), new HttpHeaders(), HttpStatus.NOT_FOUND);
 
     }
     public ResponseEntity<Object> addCategory(CategoryRequest request){
         if(categoryRepository.existsByTitle(request.getTitle())){
-            String error = "Category title already exists";
-            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Invalid Credentials",error);
-            return new ResponseEntity<Object>(
-                    apiError, new HttpHeaders(), apiError.getStatus());
+            return new ResponseEntity<Object>(new ApiResponse(HttpStatus.BAD_REQUEST, "Category title already exists"), new HttpHeaders(), HttpStatus.BAD_REQUEST);
         }
-        if(request.getTitle().isEmpty() || request.getTitle().isBlank() || request.getDescription().isBlank() || request.getDescription().isEmpty()){
-            String error = "Title or description is empty";
-            ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Invalid Credentials",error);
-            return new ResponseEntity<Object>(
-                    apiError, new HttpHeaders(), apiError.getStatus());
+        if(request.getTitle().isEmpty() ||
+                request.getTitle().isBlank() ||
+                request.getDescription().isBlank() ||
+                request.getDescription().isEmpty()){
+            return new ResponseEntity<Object>(new ApiResponse(HttpStatus.BAD_REQUEST, "Title or description is empty"), new HttpHeaders(), HttpStatus.BAD_REQUEST);
         }
         var category = Category.builder()
                 .title(request.getTitle())
                 .description(request.getDescription())
                 .build();
-        categoryRepository.save(category);
-        return new ResponseEntity<Object>(new ApiResponse(HttpStatus.OK, "Category added"), new HttpHeaders(), HttpStatus.OK);
+
+        if(request.getSpace() == 0){
+            category.setSpace(Space.INTERVIEW);
+        } else if (request.getSpace() == 1) {
+            category.setSpace(Space.CONSULTATION);
+        } else if (request.getSpace() == 2) {
+            category.setSpace(Space.SHARING_EXPERIENCE);
+        } else {
+            return new ResponseEntity<Object>(new ApiResponse(HttpStatus.BAD_REQUEST, "Space not found"), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+        }
+
+        try {
+            categoryRepository.save(category);
+            return new ResponseEntity<Object>(new ApiResponse(HttpStatus.OK, "Category added"), new HttpHeaders(), HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<Object>(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error"), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
     }
 
-    public ResponseEntity<Object> editCategory(CategoryRequest request){
+    public ResponseEntity<Object> editCategory(Long categoryId,CategoryRequest request){
+        if(!categoryRepository.existsById(categoryId)){
+            return new ResponseEntity<Object>(new ApiResponse(HttpStatus.NOT_FOUND, "Category not found"), new HttpHeaders(), HttpStatus.NOT_FOUND);
+        }
+            Category category = new Category();
+        try {
+            category = categoryRepository.findById(categoryId).get();
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ResponseEntity<Object>(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error"), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+            category.setDescription(request.getDescription());
+        if(!request.getTitle().equals(category.getTitle()) && categoryRepository.existsByTitle(request.getTitle())){
+            return new ResponseEntity<Object>(new ApiResponse(HttpStatus.BAD_REQUEST, "Category title already taken"), new HttpHeaders(), HttpStatus.BAD_REQUEST);
 
-        return new ResponseEntity<Object>(new ApiResponse(HttpStatus.OK, "Category added"), new HttpHeaders(), HttpStatus.OK);
-
+        }
+        category.setTitle(request.getTitle());
+        if(request.getSpace() == 0){
+            category.setSpace(Space.INTERVIEW);
+        } else if (request.getSpace() == 1) {
+            category.setSpace(Space.CONSULTATION);
+        } else if (request.getSpace() == 2) {
+            category.setSpace(Space.SHARING_EXPERIENCE);
+        } else {
+            return new ResponseEntity<Object>(new ApiResponse(HttpStatus.BAD_REQUEST, "Space not found"), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+        }
+        try {
+            categoryRepository.save(category);
+            return new ResponseEntity<Object>(new ApiResponse(HttpStatus.OK, "Category details updated"), new HttpHeaders(), HttpStatus.OK);
+        } catch (Exception e){
+            System.out.println(e);
+            return new ResponseEntity<Object>(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error"), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    public ResponseEntity<Object> getAllCategories(){
+        try {
+            return new ResponseEntity<Object>( categoryRepository.findAll(Sort.by("Space")), new HttpHeaders(), HttpStatus.OK);
+        }catch (Exception e){
+            System.out.println(e);
+            return new ResponseEntity<Object>(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error"), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 }

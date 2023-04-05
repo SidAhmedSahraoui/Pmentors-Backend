@@ -11,6 +11,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DeleteUserRequest {
 
-    private String id;
     private String password;
 }

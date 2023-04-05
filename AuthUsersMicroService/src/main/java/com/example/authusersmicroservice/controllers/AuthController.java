@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.UUID;
+
 @RestController
 @RequestMapping("/")
 @RequiredArgsConstructor
@@ -34,13 +36,19 @@ public class AuthController {
         return service.resetPassword(request);
     }
 
-    @PatchMapping("/update")
-    public ResponseEntity<Object> updateInfo(@RequestBody UpdateInfoRequest request){
-        return service.updateInfo(request);
+    @PatchMapping("/update/{id}")
+    public ResponseEntity<Object> updateInfo(@PathVariable(value = "id") Long userId,
+                                             @RequestBody UpdateInfoRequest request){
+        return service.updateInfo(request, userId);
     }
-    @DeleteMapping("/delete")
-    public  ResponseEntity<Object> deleteUser(@RequestBody DeleteUserRequest request){
-        return  service.deleteUser(request);
+    @DeleteMapping("/delete/{id}")
+    public  ResponseEntity<Object> deleteUser(@PathVariable(value = "id") Long userId,
+                                              @RequestBody DeleteUserRequest request){
+        return  service.deleteUser(request, userId);
+    }
+    @GetMapping("/profile/{id}")
+    public ResponseEntity<Object> getProfile(@PathVariable(value = "id") Long userId){
+        return service.getProfile(userId);
     }
 
     @ExceptionHandler({AuthException.class})

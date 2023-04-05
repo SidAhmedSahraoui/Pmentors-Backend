@@ -16,8 +16,8 @@ import java.util.UUID;
 public class Token {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    public UUID tokenId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    public Long tokenId;
 
     @Column(unique = true)
     public String token;

@@ -12,8 +12,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.util.ArrayList;
-
 @SpringBootApplication
 @EnableDiscoveryClient
 public class AuthUsersMicroServiceApplication implements CommandLineRunner {
@@ -45,15 +43,63 @@ public class AuthUsersMicroServiceApplication implements CommandLineRunner {
                         new Category(null,
                                 "Campus France",
                                 "Preparation aux entretiens de démarche de programme campus france ",
+                                Space.INTERVIEW,
                                 null));
+        Category category2 =
+                categoryRepository.save(
+                        new Category(null,
+                                "Frontend",
+                                "Preparation au post de FE developer - HTML,CSS,JS ...",
+                                Space.INTERVIEW,
+                                null));
+
+        Category category3 =
+                categoryRepository.save(
+                        new Category(null,
+                                "Backend",
+                                "Preparation au post de BE developer - Java,SQL...",
+                                Space.INTERVIEW,
+                                null));
+
             User savedUser1 = userRepository.save(
                     new User("admin",
                             "admin",
                             "admin",
                             "admin@admin.com",
-                            passwordEncoder.encode("AdminPass123"),
+                            passwordEncoder.encode("Admin@123"),
                             Role.ADMIN));
+        User savedUser2 = userRepository.save(
+                new User("provider1",
+                        "provider",
+                        "provider",
+                        "provider1@provider.com",
+                        passwordEncoder.encode("Provider@123"),
+                        Role.PROVIDER));
+        User savedUser3 = userRepository.save(
+                new User("provider2",
+                        "provider",
+                        "provider",
+                        "provider2@provider.com",
+                        passwordEncoder.encode("Provider@123"),
+                        Role.PROVIDER));
+        User savedUser4 = userRepository.save(
+                new User("provider3",
+                        "provider",
+                        "provider",
+                        "provider3@provider.com",
+                        passwordEncoder.encode("Provider@123"),
+                        Role.PROVIDER));
+        User savedUser5 = userRepository.save(
+                new User("user",
+                        "user",
+                        "user",
+                        "user@user.com",
+                        passwordEncoder.encode("User@123"),
+                        Role.USER));
             adminRepository.save(new Admin(null,savedUser1));
-            providerRepository.save(new Provider(null,savedUser1,category1));
+            providerRepository.save(new Provider(null,savedUser2,category1));
+            providerRepository.save(new Provider(null,savedUser3,category2));
+            providerRepository.save(new Provider(null,savedUser4,category3));
+
     }
 }

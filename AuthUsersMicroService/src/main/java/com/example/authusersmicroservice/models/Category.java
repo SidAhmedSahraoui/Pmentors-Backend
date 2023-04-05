@@ -18,14 +18,17 @@ import java.util.UUID;
 public class Category {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID categoryId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long categoryId;
 
     @Column(nullable = false, unique = true)
     private String title;
 
     @Column(nullable = false)
     private String description;
+
+    @Column(nullable = false)
+    private Space space;
 
     @OneToMany
     private Collection<Provider> providers;

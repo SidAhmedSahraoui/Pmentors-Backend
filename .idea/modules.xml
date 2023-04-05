@@ -2,11 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/AuthUsersMicroService/AuthUsersMicroService.iml" filepath="$PROJECT_DIR$/AuthUsersMicroService/AuthUsersMicroService.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Gateway/Gateway.iml" filepath="$PROJECT_DIR$/Gateway/Gateway.iml" />
-      <module fileurl="file://$PROJECT_DIR$/InterviewMicroService/InterviewMicroService.iml" filepath="$PROJECT_DIR$/InterviewMicroService/InterviewMicroService.iml" />
       <module fileurl="file://$PROJECT_DIR$/Pfe-Backend.iml" filepath="$PROJECT_DIR$/Pfe-Backend.iml" />
-      <module fileurl="file://$PROJECT_DIR$/Registry/Registry.iml" filepath="$PROJECT_DIR$/Registry/Registry.iml" />
     </modules>
   </component>
 </project>

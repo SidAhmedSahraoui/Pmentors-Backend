@@ -18,8 +18,8 @@ public class Provider {
 
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID providerId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long providerId;
 
     @OneToOne
     private User user;

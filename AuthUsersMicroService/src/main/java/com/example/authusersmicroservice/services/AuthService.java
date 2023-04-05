@@ -6,6 +6,7 @@ import com.example.authusersmicroservice.models.Role;
 import com.example.authusersmicroservice.models.Token;
 import com.example.authusersmicroservice.models.TokenType;
 import com.example.authusersmicroservice.models.User;
+import com.example.authusersmicroservice.repositories.ProviderRepository;
 import com.example.authusersmicroservice.repositories.TokenRepository;
 import com.example.authusersmicroservice.repositories.UserRepository;
 import com.example.authusersmicroservice.response.*;
@@ -22,7 +23,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.UUID;
 import java.util.regex.Pattern;
 
 
@@ -39,6 +39,8 @@ public class AuthService {
     private final JwtService jwtService;
     @Autowired
     private final AuthenticationManager authenticationManager;
+    @Autowired
+    private ProviderRepository providerRepository;
 
     public ResponseEntity<Object> register(RegisterRequest request) {
         if(repository.existsByUsername(request.getUsername()) ||
@@ -140,7 +142,7 @@ public class AuthService {
         }
         User user = repository.findByUsername(request.getId()).get();
         if(passwordEncoder.matches(request.getOldPassword(), user.getPassword())){
-            if(!Pattern
+            if(Pattern
                     .compile("^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$")
                     .matcher(request.getNewPassword())
                     .find()){
@@ -155,51 +157,105 @@ public class AuthService {
             return new ResponseEntity<Object>(new ApiResponse(HttpStatus.BAD_REQUEST, "Password not correct"), new HttpHeaders(), HttpStatus.BAD_REQUEST);
         }
     }
-    public ResponseEntity<Object> updateInfo(UpdateInfoRequest request) {
-        UUID userId = UUID.fromString(request.getId());
+    public ResponseEntity<Object> updateInfo(UpdateInfoRequest request, Long userId) {
+        ArrayList<String> errors = new ArrayList<>();
         if(repository.existsById(userId)){
             User user = repository.findById(userId).get();
-            if(request.getUsername() != user.getUsername() && !repository.existsByUsername(request.getUsername())){
-                user.setUsername(request.getUsername());
-            } else {
-                return new ResponseEntity<Object>(new ApiResponse(HttpStatus.BAD_REQUEST, "Username already taken"), new HttpHeaders(), HttpStatus.BAD_REQUEST);
+            if(!request.getUsername().equals(user.getUsername())
+                    && !request.getUsername().isEmpty()
+                    && !request.getUsername().isBlank()){
+                if(!repository.existsByUsername(request.getUsername())){
+                    user.setUsername(request.getUsername());
+                } else {
+                    errors.add("Username already taken");
+                }
+            }
+            if(!request.getEmail().equals(user.getEmail())
+                && !request.getEmail().isBlank()
+                && !request.getEmail().isEmpty()){
+                if(!repository.existsByEmail(request.getEmail())){
+                    if(Pattern
+                            .compile("^(.+)@(\\S+)$")
+                            .matcher(request.getEmail())
+                            .find()){
+                        user.setEmail(request.getEmail());
+                    } else {
+                        errors.add("Email not valid");
+                    }
+                } else {
+                    errors.add("Email already taken");
+                }
 
             }
-            if(request.getEmail() != user.getEmail() && !repository.existsByEmail(request.getEmail())){
-                user.setEmail(request.getEmail());
-            } else {
-                return new ResponseEntity<Object>(new ApiResponse(HttpStatus.BAD_REQUEST, "Email already taken"), new HttpHeaders(), HttpStatus.BAD_REQUEST);
-
+            if(!request.getPhone().equals(user.getPhone())
+                    && !request.getPhone().isEmpty()
+                    && !request.getPhone().isBlank()){
+                if(!repository.existsByPhone(request.getPhone())){
+                    user.setPhone(request.getPhone());
+                } else {
+                    errors.add("Phone already taken");
+                }
             }
-            if(request.getPhone() != user.getPhone() && !repository.existsByPhone(request.getPhone())){
-                user.setPhone(request.getPhone());
-            } else {
-                return new ResponseEntity<Object>(new ApiResponse(HttpStatus.BAD_REQUEST, "Phone number already taken"), new HttpHeaders(), HttpStatus.BAD_REQUEST);
 
-            }
             user.setFirstName(request.getFirstname());
             user.setLastName(request.getLastname());
-            repository.save(user);
-            return new ResponseEntity<Object>(new ApiResponse(HttpStatus.OK, "User information saved"), new HttpHeaders(), HttpStatus.OK);
 
+            if(!errors.isEmpty()){
+                ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Invalid Credentials",errors);
+                return new ResponseEntity<Object>(
+                        apiError, new HttpHeaders(), apiError.getStatus());
+            } else {
+                try {
+                    repository.save(user);
+                    return new ResponseEntity<Object>(new ApiResponse(HttpStatus.OK, "User information saved"), new HttpHeaders(), HttpStatus.OK);
+
+                } catch (Exception e) {
+                    System.out.println(e);
+                    return new ResponseEntity<Object>(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error"), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+                }
+            }
+
+
+        } else {
+            return new ResponseEntity<Object>(new ApiResponse(HttpStatus.NOT_FOUND, "User not found"), new HttpHeaders(), HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<Object>(new ApiResponse(HttpStatus.NOT_FOUND, "User not found"), new HttpHeaders(), HttpStatus.NOT_FOUND);
-
     }
-    public ResponseEntity<Object> deleteUser(DeleteUserRequest request) {
-        UUID userId = UUID.fromString(request.getId());
+    public ResponseEntity<Object> deleteUser(DeleteUserRequest request, Long userId) {
         if(repository.existsById(userId)) {
             User user = repository.findById(userId).get();
             if(passwordEncoder.matches(request.getPassword(), user.getPassword())){
-                repository.deleteById(userId);
-                return new ResponseEntity<Object>(new ApiResponse(HttpStatus.OK, "User account deleted"), new HttpHeaders(), HttpStatus.OK);
+                if(providerRepository.existsByUser(user)){
+                    providerRepository.deleteByUser(user);
+                }
+                try {
+                    tokenRepository.deleteTokensByUser(user);
+                    repository.deleteUserByUsername(user.getUsername());
+                    return new ResponseEntity<Object>(new ApiResponse(HttpStatus.OK, "User account deleted"), new HttpHeaders(), HttpStatus.OK);
 
+                } catch (Exception e) {
+                    System.out.println(e);
+                    return new ResponseEntity<Object>(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error"), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+                }
             }
             return new ResponseEntity<Object>(new ApiResponse(HttpStatus.BAD_REQUEST, "Password not correct"), new HttpHeaders(), HttpStatus.BAD_REQUEST);
-
         }
         return new ResponseEntity<Object>(new ApiResponse(HttpStatus.NOT_FOUND, "User not found"), new HttpHeaders(), HttpStatus.NOT_FOUND);
     }
+
+    public ResponseEntity<Object> getProfile(Long userId) {
+        if(repository.existsById(userId)) {
+            try {
+                User user = repository.findUserByUserId(userId);
+                return new ResponseEntity<Object>( user, new HttpHeaders(), HttpStatus.OK);
+
+            } catch (Exception e) {
+                System.out.println(e);
+                return new ResponseEntity<Object>(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error"), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+        return new ResponseEntity<Object>(new ApiResponse(HttpStatus.NOT_FOUND, "User not found"), new HttpHeaders(), HttpStatus.NOT_FOUND);
+    }
+
 
 
 

@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/admin")
@@ -25,7 +24,7 @@ public class AdminController {
     }
 
     @DeleteMapping("/delete-provider/{providerId}")
-    public ResponseEntity<Object> removeProvider(@PathVariable UUID providerId){
+    public ResponseEntity<Object> removeProvider(@PathVariable Long providerId){
 
         return adminService.deleteProvider(providerId);
     }
@@ -42,9 +41,15 @@ public class AdminController {
         return adminService.addCategory(request);
     }
 
-    @PatchMapping("/edit-category")
-    public  ResponseEntity<Object> editCategory(@RequestBody CategoryRequest request){
+    @PatchMapping("/edit-category/{id}")
+    public  ResponseEntity<Object> editCategory(@PathVariable(value = "id")  Long categoryId,
+                                                @RequestBody CategoryRequest request){
 
-        return adminService.editCategory(request);
+        return adminService.editCategory(categoryId,request);
+    }
+
+    @GetMapping("/categories")
+    public ResponseEntity<Object> getAllCategories(){
+        return adminService.getAllCategories();
     }
 }

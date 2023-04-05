@@ -15,8 +15,8 @@ import java.util.UUID;
 public class Admin {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID adminId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long adminId;
 
     @OneToOne
     private User user;

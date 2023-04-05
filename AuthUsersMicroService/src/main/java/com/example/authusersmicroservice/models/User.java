@@ -11,7 +11,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.UUID;
 
 @Data
 @AllArgsConstructor
@@ -21,8 +20,8 @@ import java.util.UUID;
 @Table(name = "users")
 public class User implements UserDetails {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID userId;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long userId;
 
     @Column(unique = true, nullable = false)
     private String username;
@@ -40,8 +39,11 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(columnDefinition = "boolean default false")
     private Boolean locked = false;
-    private Boolean enabled = false;
+
+    @Column(columnDefinition = "boolean default true")
+    private Boolean enabled = true;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
