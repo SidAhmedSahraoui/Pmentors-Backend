@@ -1,8 +1,8 @@
 package com.example.authusersmicroservice.controllers;
 
-import com.example.authusersmicroservice.response.CategoryRequest;
-import com.example.authusersmicroservice.response.CreateProviderRequest;
-import com.example.authusersmicroservice.response.UpgradeProviderRequest;
+import com.example.authusersmicroservice.DTOs.CategoryRequest;
+import com.example.authusersmicroservice.DTOs.CreateProviderRequest;
+import com.example.authusersmicroservice.DTOs.UpgradeProviderRequest;
 import com.example.authusersmicroservice.services.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,5 +51,25 @@ public class AdminController {
     @GetMapping("/categories")
     public ResponseEntity<Object> getAllCategories(){
         return adminService.getAllCategories();
+    }
+
+    @GetMapping("/users")
+    public ResponseEntity<Object> getAllUsers(){
+        return adminService.getAllUsers();
+    }
+
+    @GetMapping("/users/{role}")
+    public ResponseEntity<Object> getAllUsersByRole(@PathVariable(value = "role") Integer role){
+        return adminService.getAllUsersByRole(role);
+    }
+
+    @GetMapping("/providers")
+    public ResponseEntity<Object> getAllProviders(){
+        return adminService.getAllProviders();
+    }
+
+    @GetMapping("/admins")
+    public ResponseEntity<Object> getAllAdmins(){
+        return adminService.getAllAdmins();
     }
 }

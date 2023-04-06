@@ -1,14 +1,12 @@
 package com.example.authusersmicroservice.controllers;
 
-import com.example.authusersmicroservice.exceptions.AuthException;
-import com.example.authusersmicroservice.response.*;
+import com.example.authusersmicroservice.errors.AuthException;
+import com.example.authusersmicroservice.DTOs.*;
 import com.example.authusersmicroservice.services.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/")

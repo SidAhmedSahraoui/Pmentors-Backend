@@ -1,5 +1,7 @@
 package com.example.authusersmicroservice.repositories;
 
+import com.example.authusersmicroservice.DTOs.UserInformation;
+import com.example.authusersmicroservice.models.Role;
 import com.example.authusersmicroservice.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -8,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -31,4 +34,10 @@ public interface UserRepository extends JpaRepository<User, Long> {
     @Query("UPDATE User a " +
             "SET a.enabled = TRUE WHERE a.email = ?1")
     int enableAppUser(String email);
+
+    @Query("select u from User u where u.role = :role")
+    List<User> findUsersByRole(@Param(value = "role") Role role);
+
+    /*@Query(" select s.user_id, s.username, s.email, s.locked, s.enabled from users s wher")
+    List<UserInformation> findProvidersByCategory(@Param("id") Long categoryId);*/
 }

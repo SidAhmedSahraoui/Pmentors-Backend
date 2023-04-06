@@ -1,14 +1,15 @@
 package com.example.authusersmicroservice.services;
 
-import com.example.authusersmicroservice.exceptions.ApiError;
-import com.example.authusersmicroservice.exceptions.ApiResponse;
+import com.example.authusersmicroservice.errors.ApiError;
+import com.example.authusersmicroservice.errors.ApiResponse;
 import com.example.authusersmicroservice.models.*;
+import com.example.authusersmicroservice.repositories.AdminRepository;
 import com.example.authusersmicroservice.repositories.CategoryRepository;
 import com.example.authusersmicroservice.repositories.ProviderRepository;
 import com.example.authusersmicroservice.repositories.UserRepository;
-import com.example.authusersmicroservice.response.CategoryRequest;
-import com.example.authusersmicroservice.response.CreateProviderRequest;
-import com.example.authusersmicroservice.response.UpgradeProviderRequest;
+import com.example.authusersmicroservice.DTOs.CategoryRequest;
+import com.example.authusersmicroservice.DTOs.CreateProviderRequest;
+import com.example.authusersmicroservice.DTOs.UpgradeProviderRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -32,6 +33,8 @@ public class AdminService {
     private final CategoryRepository categoryRepository;
     @Autowired
     private final ProviderRepository providerRepository;
+    @Autowired
+    private final AdminRepository adminRepository;
 
     public ResponseEntity<Object> createProvider(CreateProviderRequest request) {
 
@@ -115,9 +118,19 @@ public class AdminService {
             return new ResponseEntity<Object>(
                     apiError, new HttpHeaders(), apiError.getStatus());
         }
-        providerRepository.deleteById(providerId);
-        return new ResponseEntity<Object>(new ApiResponse(HttpStatus.OK, "Provider removed"), new HttpHeaders(), HttpStatus.OK);
 
+        try{
+            Provider provider = providerRepository.findById(providerId).get();
+            User user = provider.getUser();
+            providerRepository.deleteByUser(user);
+            user.setRole(Role.USER);
+            userRepository.save(user);
+            return new ResponseEntity<Object>(new ApiResponse(HttpStatus.OK, "Provider removed"), new HttpHeaders(), HttpStatus.OK);
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ResponseEntity<Object>(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error"), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+
+        }
     }
 
     public  ResponseEntity<Object> upgradeProvider(UpgradeProviderRequest request) {
@@ -220,4 +233,42 @@ public class AdminService {
             return new ResponseEntity<Object>(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error"), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    public ResponseEntity<Object> getAllUsers(){
+        try {
+            return new ResponseEntity<Object>( userRepository.findAll(), new HttpHeaders(), HttpStatus.OK);
+        }catch (Exception e){
+            System.out.println(e);
+            return new ResponseEntity<Object>(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error"), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    public ResponseEntity<Object> getAllUsersByRole(Integer role){
+        if (role == 0 || role == 1 || role == 2){
+            try {
+                return new ResponseEntity<Object>( userRepository.findUsersByRole(role == 0 ? Role.ADMIN : (role == 1 ? Role.PROVIDER : Role.USER)), new HttpHeaders(), HttpStatus.OK);
+            }catch (Exception e){
+                System.out.println(e);
+                return new ResponseEntity<Object>(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error"), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+        return new ResponseEntity<Object>(new ApiResponse(HttpStatus.NOT_ACCEPTABLE, "Role not found"), new HttpHeaders(), HttpStatus.NOT_ACCEPTABLE);
+    }
+
+    public ResponseEntity<Object> getAllAdmins(){
+            try {
+                return new ResponseEntity<Object>( adminRepository.findAll(), new HttpHeaders(), HttpStatus.OK);
+            }catch (Exception e){
+                System.out.println(e);
+                return new ResponseEntity<Object>(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error"), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        }
+
+    public ResponseEntity<Object> getAllProviders(){
+        try {
+            return new ResponseEntity<Object>( providerRepository.findAll(), new HttpHeaders(), HttpStatus.OK);
+        }catch (Exception e){
+            System.out.println(e);
+            return new ResponseEntity<Object>(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error"), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 }

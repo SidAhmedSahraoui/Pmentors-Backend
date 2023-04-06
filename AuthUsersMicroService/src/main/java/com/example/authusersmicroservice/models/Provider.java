@@ -1,12 +1,7 @@
 package com.example.authusersmicroservice.models;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-import java.util.UUID;
+import lombok.*;
 
 @Data
 @Builder
@@ -25,5 +20,6 @@ public class Provider {
     private User user;
 
     @ManyToOne
+    @JoinColumn(name="categoryId")
     private Category category;
 }

@@ -1,4 +1,4 @@
-package com.example.authusersmicroservice.exceptions;
+package com.example.authusersmicroservice.errors;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.example.authusersmicroservice.response;
+package com.example.authusersmicroservice.DTOs;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class DeleteUserRequest {
+public class CategoryRequest {
 
-    private String password;
+    private String title;
+    private String description;
+    private Integer space;
+
 }

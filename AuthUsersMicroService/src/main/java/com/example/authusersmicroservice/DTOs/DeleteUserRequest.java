@@ -1,4 +1,4 @@
-package com.example.authusersmicroservice.response;
+package com.example.authusersmicroservice.DTOs;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,8 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class AuthResponse {
+public class DeleteUserRequest {
 
-    private String token;
+    private String password;
 }
-

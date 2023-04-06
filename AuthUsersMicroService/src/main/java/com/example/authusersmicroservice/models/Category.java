@@ -1,13 +1,10 @@
 package com.example.authusersmicroservice.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Collection;
-import java.util.UUID;
 
 @Data
 @Builder
@@ -30,7 +27,9 @@ public class Category {
     @Column(nullable = false)
     private Space space;
 
-    @OneToMany
+    @ToString.Exclude
+    @JsonIgnore
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private Collection<Provider> providers;
 
 }

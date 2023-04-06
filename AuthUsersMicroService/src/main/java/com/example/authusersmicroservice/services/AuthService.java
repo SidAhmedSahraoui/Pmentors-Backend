@@ -1,7 +1,7 @@
 package com.example.authusersmicroservice.services;
 
-import com.example.authusersmicroservice.exceptions.ApiError;
-import com.example.authusersmicroservice.exceptions.ApiResponse;
+import com.example.authusersmicroservice.errors.ApiError;
+import com.example.authusersmicroservice.errors.ApiResponse;
 import com.example.authusersmicroservice.models.Role;
 import com.example.authusersmicroservice.models.Token;
 import com.example.authusersmicroservice.models.TokenType;
@@ -9,7 +9,7 @@ import com.example.authusersmicroservice.models.User;
 import com.example.authusersmicroservice.repositories.ProviderRepository;
 import com.example.authusersmicroservice.repositories.TokenRepository;
 import com.example.authusersmicroservice.repositories.UserRepository;
-import com.example.authusersmicroservice.response.*;
+import com.example.authusersmicroservice.DTOs.*;
 import com.example.authusersmicroservice.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,6 +89,8 @@ public class AuthService {
                 .phone(request.getPhone())
                 .password(passwordEncoder.encode(request.getPassword()))
                 .role(Role.USER)
+                .locked(false)
+                .enabled(false)
                 .build();
         var savedUser = repository.save(user);
         var jwtToken = jwtService.generateToken(user);

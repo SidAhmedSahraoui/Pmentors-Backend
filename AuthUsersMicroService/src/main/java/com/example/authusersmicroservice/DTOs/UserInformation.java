@@ -1,4 +1,4 @@
-package com.example.authusersmicroservice.response;
+package com.example.authusersmicroservice.DTOs;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,9 +9,11 @@ import lombok.NoArgsConstructor;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class UpgradeProviderRequest {
+public class UserInformation {
 
+    private Long id;
     private String username;
-    private String categoryTitle;
-
+    private String email;
+    private Boolean locked;
+    private Boolean enabled;
 }

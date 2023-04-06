@@ -1,4 +1,4 @@
-package com.example.authusersmicroservice.response;
+package com.example.authusersmicroservice.DTOs;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
