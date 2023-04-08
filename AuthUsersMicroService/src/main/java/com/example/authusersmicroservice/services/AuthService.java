@@ -2,20 +2,19 @@ package com.example.authusersmicroservice.services;
 
 import com.example.authusersmicroservice.errors.ApiError;
 import com.example.authusersmicroservice.errors.ApiResponse;
-import com.example.authusersmicroservice.models.Role;
-import com.example.authusersmicroservice.models.Token;
-import com.example.authusersmicroservice.models.TokenType;
-import com.example.authusersmicroservice.models.User;
+import com.example.authusersmicroservice.models.*;
 import com.example.authusersmicroservice.repositories.ProviderRepository;
+import com.example.authusersmicroservice.repositories.RoleRepository;
 import com.example.authusersmicroservice.repositories.TokenRepository;
 import com.example.authusersmicroservice.repositories.UserRepository;
 import com.example.authusersmicroservice.DTOs.*;
-import com.example.authusersmicroservice.security.JwtService;
+import com.example.authusersmicroservice.security.JwtUtilities;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,6 +22,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.regex.Pattern;
 
 
@@ -36,11 +37,13 @@ public class AuthService {
     @Autowired
     private final PasswordEncoder passwordEncoder;
     @Autowired
-    private final JwtService jwtService;
+    private final JwtUtilities jwtService;
     @Autowired
     private final AuthenticationManager authenticationManager;
     @Autowired
     private ProviderRepository providerRepository;
+    @Autowired
+    private RoleRepository roleRepository;
 
     public ResponseEntity<Object> register(RegisterRequest request) {
         if(repository.existsByUsername(request.getUsername()) ||
@@ -81,6 +84,9 @@ public class AuthService {
             return new ResponseEntity<Object>(
                     apiError, new HttpHeaders(), apiError.getStatus());
         }
+        var role = roleRepository.findByRoleName(RoleName.USER);
+        var roles = new ArrayList<Role>();
+        roles.add(role);
         var user = User.builder()
                 .username(request.getUsername())
                 .firstName(request.getFirstname())
@@ -88,12 +94,12 @@ public class AuthService {
                 .email(request.getEmail())
                 .phone(request.getPhone())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.USER)
+                .roles(roles)
                 .locked(false)
                 .enabled(false)
                 .build();
         var savedUser = repository.save(user);
-        var jwtToken = jwtService.generateToken(user);
+        var jwtToken = jwtService.generateToken(savedUser.getEmail(), Collections.singletonList(role.getRoleName()));
         saveUserToken(savedUser, jwtToken);
         return new ResponseEntity<Object>(AuthResponse.builder()
                 .token(jwtToken)
@@ -118,7 +124,10 @@ public class AuthService {
             var user = repository.findUserByEmailOrUsernameOrPhone(request.getCredential())
                     .orElseThrow();
             if(passwordEncoder.matches(request.getPassword(),user.getPassword())){
-                var jwtToken = jwtService.generateToken(user);
+                List<String> rolesNames = new ArrayList<>();
+                user.getRoles().forEach(r-> rolesNames.add(r.getRoleName()));
+
+                var jwtToken = jwtService.generateToken(user.getUsername(),rolesNames);
                 revokeAllUserTokens(user);
                 saveUserToken(user, jwtToken);
                 return new ResponseEntity<>(AuthResponse.builder()
@@ -257,7 +266,6 @@ public class AuthService {
         }
         return new ResponseEntity<Object>(new ApiResponse(HttpStatus.NOT_FOUND, "User not found"), new HttpHeaders(), HttpStatus.NOT_FOUND);
     }
-
 
 
 

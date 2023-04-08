@@ -1,65 +1,51 @@
 package com.example.authusersmicroservice.security;
 
-import io.jsonwebtoken.ExpiredJwtException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-import org.springframework.web.filter.OncePerRequestFilter;
-
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.lang.NonNull;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+
 import java.io.IOException;
 
+
+@Slf4j
 @Component
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private JwtService jwtTokenUtil;
+    private  final JwtUtilities jwtUtilities ;
+    private final CustomUserDetailsService customerUserDetailsService ;
 
     @Override
-    protected void doFilterInternal(HttpServletRequest request,
-                                    HttpServletResponse response,
-                                    FilterChain chain)
+    protected void doFilterInternal(@NonNull HttpServletRequest request,
+                                    @NonNull HttpServletResponse response,
+                                    @NonNull FilterChain filterChain)
             throws ServletException, IOException {
 
-        try {
+        String token = jwtUtilities.getToken(request) ;
 
-            String jwtToken = extractJwtFromRequest(request);
+        if (token!=null && jwtUtilities.validateToken(token))
+        {
+            String email = jwtUtilities.extractUsername(token);
 
-            if (StringUtils.hasText(jwtToken) && jwtTokenUtil.validateToken(jwtToken)) {
-                UserDetails userDetails = new User(jwtTokenUtil.getUsernameFromToken(jwtToken), "",
-                        jwtTokenUtil.getRolesFromToken(jwtToken));
+            UserDetails userDetails = customerUserDetailsService.loadUserByUsername(email);
+            if (userDetails != null) {
+                UsernamePasswordAuthenticationToken authentication =
+                        new UsernamePasswordAuthenticationToken(userDetails.getUsername() ,null , userDetails.getAuthorities());
+                log.info("authenticated user with credential :{}", email);
+                SecurityContextHolder.getContext().setAuthentication(authentication);
 
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
-                SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-            } else {
-                System.out.println("Cannot set the Security Context");
             }
-        } catch (ExpiredJwtException ex) {
-            request.setAttribute("exception", ex);
-            throw ex;
-        } catch (BadCredentialsException ex) {
-            request.setAttribute("exception", ex);
-            throw ex;
         }
-        chain.doFilter(request, response);
-    }
-
-    private String extractJwtFromRequest(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7, bearerToken.length());
-        }
-        return null;
+        filterChain.doFilter(request,response);
     }
 
 }
-

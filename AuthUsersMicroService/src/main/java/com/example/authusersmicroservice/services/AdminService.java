@@ -3,10 +3,7 @@ package com.example.authusersmicroservice.services;
 import com.example.authusersmicroservice.errors.ApiError;
 import com.example.authusersmicroservice.errors.ApiResponse;
 import com.example.authusersmicroservice.models.*;
-import com.example.authusersmicroservice.repositories.AdminRepository;
-import com.example.authusersmicroservice.repositories.CategoryRepository;
-import com.example.authusersmicroservice.repositories.ProviderRepository;
-import com.example.authusersmicroservice.repositories.UserRepository;
+import com.example.authusersmicroservice.repositories.*;
 import com.example.authusersmicroservice.DTOs.CategoryRequest;
 import com.example.authusersmicroservice.DTOs.CreateProviderRequest;
 import com.example.authusersmicroservice.DTOs.UpgradeProviderRequest;
@@ -35,6 +32,8 @@ public class AdminService {
     private final ProviderRepository providerRepository;
     @Autowired
     private final AdminRepository adminRepository;
+    @Autowired
+    private RoleRepository roleRepository;
 
     public ResponseEntity<Object> createProvider(CreateProviderRequest request) {
 
@@ -80,6 +79,12 @@ public class AdminService {
             return new ResponseEntity<Object>(
                     apiError, new HttpHeaders(), apiError.getStatus());
         }
+        var providerRole = roleRepository.findByRoleName(RoleName.PROVIDER);
+        var userRole = roleRepository.findByRoleName(RoleName.USER);
+
+        var roles = new ArrayList<Role>();
+        roles.add(providerRole);
+        roles.add(userRole);
 
         var user = User.builder()
                 .username(request.getUsername())
@@ -87,7 +92,7 @@ public class AdminService {
                 .lastName(request.getLastname())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.PROVIDER)
+                .roles(roles)
                 .build();
         try{
             userRepository.save(user);
@@ -122,8 +127,11 @@ public class AdminService {
         try{
             Provider provider = providerRepository.findById(providerId).get();
             User user = provider.getUser();
+            Role role = roleRepository.findByRoleName(RoleName.USER);
+            var roles = new ArrayList<Role>();
+            roles.add(role);
             providerRepository.deleteByUser(user);
-            user.setRole(Role.USER);
+            user.setRoles(roles);
             userRepository.save(user);
             return new ResponseEntity<Object>(new ApiResponse(HttpStatus.OK, "Provider removed"), new HttpHeaders(), HttpStatus.OK);
         } catch (Exception e) {
@@ -139,14 +147,19 @@ public class AdminService {
         }
         if(userRepository.existsByUsername(request.getUsername())){
            User user = userRepository.findByUsername(request.getUsername()).get();
-           if(user.getRole().equals(Role.PROVIDER) || providerRepository.existsByUser(user)){
+            var providerRole = roleRepository.findByRoleName(RoleName.PROVIDER);
+            var userRole = roleRepository.findByRoleName(RoleName.USER);
+            if(user.getRoles().contains(providerRole) || providerRepository.existsByUser(user)){
                return new ResponseEntity<Object>(new ApiResponse(HttpStatus.BAD_REQUEST, "Already provider"), new HttpHeaders(), HttpStatus.BAD_REQUEST);
            }
-           user.setRole(Role.PROVIDER);
+            var roles = new ArrayList<Role>();
+            roles.add(providerRole);
+            roles.add(userRole);
+            user.setRoles(roles);
            Category category = categoryRepository.findByTitle(request.getCategoryTitle());
            try{
-               userRepository.save(user);
-               providerRepository.save(new Provider(null,user,category));
+               User savedUser = userRepository.save(user);
+               providerRepository.save(new Provider(null,savedUser,category));
                return new ResponseEntity<Object>(new ApiResponse(HttpStatus.OK, "User account upgraded to provider"), new HttpHeaders(), HttpStatus.OK);
            }catch (Exception e){
                System.out.println(e);
@@ -195,7 +208,7 @@ public class AdminService {
         if(!categoryRepository.existsById(categoryId)){
             return new ResponseEntity<Object>(new ApiResponse(HttpStatus.NOT_FOUND, "Category not found"), new HttpHeaders(), HttpStatus.NOT_FOUND);
         }
-            Category category = new Category();
+            Category category;
         try {
             category = categoryRepository.findById(categoryId).get();
         } catch (Exception e) {
@@ -241,17 +254,17 @@ public class AdminService {
             return new ResponseEntity<Object>(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error"), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    public ResponseEntity<Object> getAllUsersByRole(Integer role){
+    /*public ResponseEntity<Object> getAllUsersByRole(Integer role){
         if (role == 0 || role == 1 || role == 2){
             try {
-                return new ResponseEntity<Object>( userRepository.findUsersByRole(role == 0 ? Role.ADMIN : (role == 1 ? Role.PROVIDER : Role.USER)), new HttpHeaders(), HttpStatus.OK);
+                return new ResponseEntity<Object>( userRepository.findUsersByRole(role == 0 ? RoleName.ADMIN : (role == 1 ? RoleName.PROVIDER : RoleName.USER)), new HttpHeaders(), HttpStatus.OK);
             }catch (Exception e){
                 System.out.println(e);
                 return new ResponseEntity<Object>(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error"), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
             }
         }
         return new ResponseEntity<Object>(new ApiResponse(HttpStatus.NOT_ACCEPTABLE, "Role not found"), new HttpHeaders(), HttpStatus.NOT_ACCEPTABLE);
-    }
+    }*/
 
     public ResponseEntity<Object> getAllAdmins(){
             try {

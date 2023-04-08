@@ -14,37 +14,37 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService service;
-    @PostMapping("/register")
+    @PostMapping("/auth/register")
     public ResponseEntity<Object> register(
             @RequestBody RegisterRequest request
     ) {
         return service.register(request);
     }
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public ResponseEntity<Object> authenticate(
             @RequestBody LoginRequest request
     ) {
         return service.authenticate(request);
     }
 
-    @PostMapping("/reset-password")
+    @PostMapping("/user/reset-password")
     public ResponseEntity<Object> resetPassword(
             @RequestBody PasswordRequest request
     ) {
         return service.resetPassword(request);
     }
 
-    @PatchMapping("/update/{id}")
+    @PatchMapping("/user/update/{id}")
     public ResponseEntity<Object> updateInfo(@PathVariable(value = "id") Long userId,
                                              @RequestBody UpdateInfoRequest request){
         return service.updateInfo(request, userId);
     }
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/user/delete/{id}")
     public  ResponseEntity<Object> deleteUser(@PathVariable(value = "id") Long userId,
                                               @RequestBody DeleteUserRequest request){
         return  service.deleteUser(request, userId);
     }
-    @GetMapping("/profile/{id}")
+    @GetMapping("/user/profile/{id}")
     public ResponseEntity<Object> getProfile(@PathVariable(value = "id") Long userId){
         return service.getProfile(userId);
     }

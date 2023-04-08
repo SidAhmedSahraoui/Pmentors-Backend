@@ -1,7 +1,28 @@
 package com.example.authusersmicroservice.models;
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
-public enum Role {
-    USER,
-    PROVIDER,
-    ADMIN
+import java.io.Serializable;
+
+
+@Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class Role implements Serializable  {
+
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    Integer roleId ;
+    @Enumerated(EnumType.STRING)
+    RoleName roleName ;
+
+    public Role (RoleName roleName) {this.roleName = roleName;}
+    public String getRoleName() {
+        return roleName.toString();
+    }
 }

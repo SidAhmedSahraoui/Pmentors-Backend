@@ -7,8 +7,10 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -16,7 +18,7 @@ import java.util.Collections;
 @Builder
 @Entity
 @Table(name = "users")
-public class User implements UserDetails {
+public class User implements Serializable, UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long userId;
@@ -36,8 +38,9 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    private Role role;
+    //Un utilisateur peut avoir plusieurs roles
+    @ManyToMany(fetch = FetchType.EAGER  , cascade = CascadeType.PERSIST)
+    List<Role> roles ;
 
     @Column(columnDefinition = "boolean default false")
     private Boolean locked = false;
@@ -47,9 +50,9 @@ public class User implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        SimpleGrantedAuthority authority =
-                new SimpleGrantedAuthority(role.name());
-        return Collections.singletonList(authority);
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        this.roles.forEach(role -> authorities.add(new SimpleGrantedAuthority(role.getRoleName())));
+        return authorities;
     }
 
     @JsonIgnore
@@ -80,12 +83,12 @@ public class User implements UserDetails {
                 String lastName,
                 String email,
                 String password,
-                Role role) {
+                List<Role> roles) {
         this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
-        this.role = role;
+        this.roles = roles;
     }
 }
