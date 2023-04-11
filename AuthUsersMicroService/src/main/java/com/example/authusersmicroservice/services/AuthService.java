@@ -3,10 +3,7 @@ package com.example.authusersmicroservice.services;
 import com.example.authusersmicroservice.errors.ApiError;
 import com.example.authusersmicroservice.errors.ApiResponse;
 import com.example.authusersmicroservice.models.*;
-import com.example.authusersmicroservice.repositories.ProviderRepository;
-import com.example.authusersmicroservice.repositories.RoleRepository;
-import com.example.authusersmicroservice.repositories.TokenRepository;
-import com.example.authusersmicroservice.repositories.UserRepository;
+import com.example.authusersmicroservice.repositories.*;
 import com.example.authusersmicroservice.DTOs.*;
 import com.example.authusersmicroservice.security.JwtUtilities;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -44,6 +42,8 @@ public class AuthService {
     private ProviderRepository providerRepository;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private CategoryRepository categoryRepository;
 
     public ResponseEntity<Object> register(RegisterRequest request) {
         if(repository.existsByUsername(request.getUsername()) ||
@@ -263,8 +263,57 @@ public class AuthService {
                 System.out.println(e);
                 return new ResponseEntity<Object>(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error"), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
             }
+        } else {
+            return new ResponseEntity<Object>(new ApiResponse(HttpStatus.NOT_FOUND, "User not found"), new HttpHeaders(), HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<Object>(new ApiResponse(HttpStatus.NOT_FOUND, "User not found"), new HttpHeaders(), HttpStatus.NOT_FOUND);
+    }
+
+    public ResponseEntity<Object> getCategoriesBySpaceName(Integer spaceId) {
+        if(spaceId == 0) {
+            try {
+                List<Category> categories = categoryRepository.findCategoriesBySpace(Space.INTERVIEW);
+                return new ResponseEntity<Object>( categories, new HttpHeaders(), HttpStatus.OK);
+
+            } catch (Exception e) {
+                System.out.println(e);
+                return new ResponseEntity<Object>(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error"), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else if (spaceId == 1) {
+            try {
+                List<Category> categories = categoryRepository.findCategoriesBySpace(Space.CONSULTATION);
+                return new ResponseEntity<Object>( categories, new HttpHeaders(), HttpStatus.OK);
+
+            } catch (Exception e) {
+                System.out.println(e);
+                return new ResponseEntity<Object>(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error"), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else if (spaceId == 2) {
+            try {
+                List<Category> categories = categoryRepository.findCategoriesBySpace(Space.SHARING_EXPERIENCE);
+                return new ResponseEntity<Object>( categories, new HttpHeaders(), HttpStatus.OK);
+
+            } catch (Exception e) {
+                System.out.println(e);
+                return new ResponseEntity<Object>(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error"), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            return new ResponseEntity<Object>(new ApiResponse(HttpStatus.NOT_FOUND, "Categories not found"), new HttpHeaders(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    public ResponseEntity<Object> getProvidersByCategory(Long categoryId) {
+        if(categoryRepository.existsById(categoryId)) {
+            try {
+                Collection<Provider> providers = categoryRepository.findById(categoryId).get().getProviders();
+                return new ResponseEntity<Object>( providers, new HttpHeaders(), HttpStatus.OK);
+
+            } catch (Exception e) {
+                System.out.println(e);
+                return new ResponseEntity<Object>(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error"), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            return new ResponseEntity<Object>(new ApiResponse(HttpStatus.NOT_FOUND, "Category not found"), new HttpHeaders(), HttpStatus.NOT_FOUND);
+        }
     }
 
 

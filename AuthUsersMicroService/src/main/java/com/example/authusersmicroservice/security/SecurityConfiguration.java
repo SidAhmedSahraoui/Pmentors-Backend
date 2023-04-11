@@ -29,10 +29,11 @@ public class SecurityConfiguration {
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
             .authorizeHttpRequests()
-            .requestMatchers("/auth/**").permitAll()
+            .requestMatchers("/**").permitAll();
+            /*.requestMatchers("/auth/**").permitAll()
             .requestMatchers("/user/**").hasAuthority("USER")
             .requestMatchers("/admin/**").hasAuthority("ADMIN")
-            .requestMatchers("/provider/**").hasAuthority("PROVIDER") ;
+            .requestMatchers("/provider/**").hasAuthority("PROVIDER") ;*/
         http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return  http.build();

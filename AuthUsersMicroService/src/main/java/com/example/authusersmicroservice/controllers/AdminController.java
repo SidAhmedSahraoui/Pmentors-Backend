@@ -58,11 +58,6 @@ public class AdminController {
         return adminService.getAllUsers();
     }
 
-   /* @GetMapping("/users/{role}")
-    public ResponseEntity<Object> getAllUsersByRole(@PathVariable(value = "role") Integer role){
-        return adminService.getAllUsersByRole(role);
-    }*/
-
     @GetMapping("/providers")
     public ResponseEntity<Object> getAllProviders(){
         return adminService.getAllProviders();
