@@ -39,7 +39,7 @@ public class UserController {
         return service.getProfile(userId);
     }
 
-    @GetMapping("/categories/{id}")
+    @GetMapping("/space/{id}/categories")
     public ResponseEntity<Object> getCategoriesBySpaceName(@PathVariable(value = "id") Integer spaceId){
         return service.getCategoriesBySpaceName(spaceId);
     }
