@@ -3,6 +3,9 @@ package com.example.interviewmicroservice.models;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+
 
 @Data
 @Builder
@@ -13,7 +16,7 @@ import lombok.*;
 public class Appointment {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long appointmentId;
 
     @Column(nullable = false)
@@ -22,6 +25,7 @@ public class Appointment {
     @Column(nullable = false)
     private String providerId;
 
-
+    @Column(nullable = false)
+    private LocalDate appointmentDate;
 
 }

@@ -1,4 +1,4 @@
-package com.example.authusersmicroservice.models;
+package com.example.interviewmicroservice.models;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -12,17 +12,17 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Role implements Serializable  {
+public class Day implements Serializable  {
 
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer roleId ;
+    private Integer dayId ;
     @Enumerated(EnumType.STRING)
-    private RoleName roleName ;
+    private DayName dayName ;
 
-    public Role (RoleName roleName) {this.roleName = roleName;}
-    public String getRoleName() {
-        return roleName.toString();
+    public Day (DayName dayName) {this.dayName = dayName;}
+    public String getDayName() {
+        return dayName.toString();
     }
 }
