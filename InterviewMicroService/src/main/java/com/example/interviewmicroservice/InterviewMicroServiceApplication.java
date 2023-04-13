@@ -10,11 +10,13 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
 import java.time.LocalTime;
 
 @SpringBootApplication
 @EnableDiscoveryClient
+@EnableFeignClients
 public class InterviewMicroServiceApplication implements CommandLineRunner {
 
     @Autowired
@@ -36,11 +38,11 @@ public class InterviewMicroServiceApplication implements CommandLineRunner {
             LocalTime start = LocalTime.of(i, 0);
             LocalTime middle = LocalTime.of(i,30);
             LocalTime end = LocalTime.of(i + 1,0);
-            timeSlotRepository.save(new TimeSlot(null, start,middle));
-            timeSlotRepository.save(new TimeSlot(null, middle,end));
+            timeSlotRepository.save(new TimeSlot(null, start,middle,null));
+            timeSlotRepository.save(new TimeSlot(null, middle,end,null));
         }
-        timeSlotRepository.save(new TimeSlot(null,LocalTime.of(23,0),LocalTime.of(23,30)));
-        timeSlotRepository.save(new TimeSlot(null,LocalTime.of(23,30),LocalTime.of(0,0)));
+        timeSlotRepository.save(new TimeSlot(null,LocalTime.of(23,0),LocalTime.of(23,30),null));
+        timeSlotRepository.save(new TimeSlot(null,LocalTime.of(23,30),LocalTime.of(0,0),null));
 
         // Insert all days of week
         dayRepository.save(new Day(null, DayName.SUNDAY));
