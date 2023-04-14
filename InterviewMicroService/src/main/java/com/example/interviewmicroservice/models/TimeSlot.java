@@ -8,8 +8,7 @@ import java.util.Set;
 
 
 @Entity
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "slots")
@@ -26,7 +25,7 @@ public class TimeSlot implements Serializable  {
     @Column(nullable = false)
     private LocalTime endsAt;
 
-    @OneToMany(mappedBy = "timeSlot")
-    private Set<ProviderSlots> providerSlots;
+    @ManyToMany(mappedBy = "slots")
+    private Set<Provider> providers;
 
 }

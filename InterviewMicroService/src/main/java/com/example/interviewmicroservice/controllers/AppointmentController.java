@@ -1,10 +1,16 @@
 package com.example.interviewmicroservice.controllers;
 
 import com.example.interviewmicroservice.DTOs.AddPlanningRequest;
+import com.example.interviewmicroservice.models.Day;
+import com.example.interviewmicroservice.models.TimeSlot;
+import com.example.interviewmicroservice.repositories.DayRepository;
+import com.example.interviewmicroservice.repositories.TimeSlotRepository;
 import com.example.interviewmicroservice.services.AppointmentService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @AllArgsConstructor
 @RestController
@@ -12,10 +18,22 @@ import org.springframework.web.bind.annotation.*;
 public class AppointmentController {
 
     private final AppointmentService appointmentService;
+    private final DayRepository dayRepository;
+    private final TimeSlotRepository timeSlotRepository;
 
     @PostMapping("/add-planning")
     public ResponseEntity<Object> getProvider(
             @RequestBody AddPlanningRequest request){
         return appointmentService.addPlanning(request);
+    }
+
+    @GetMapping("/days")
+    public List<Day> getDays(){
+        return dayRepository.findAll();
+    }
+
+    @GetMapping("/slots")
+    public List<TimeSlot> getSlots(){
+        return timeSlotRepository.findAll();
     }
 }

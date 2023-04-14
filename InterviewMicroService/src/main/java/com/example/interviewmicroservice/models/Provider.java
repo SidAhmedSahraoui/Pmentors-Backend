@@ -2,10 +2,7 @@ package com.example.interviewmicroservice.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Set;
 
@@ -15,7 +12,7 @@ import java.util.Set;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "provider")
+@Table(name = "providers")
 public class Provider {
 
     @Id
@@ -25,6 +22,25 @@ public class Provider {
     private String email;
     private String username;
 
-    @OneToMany(mappedBy = "provider")
-    private Set<ProviderSlots> providerSlots;
+    @ManyToMany()
+    @JoinTable(
+            name = "providers_slots",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "time_slot_id")
+    )
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @JsonIgnore
+    private Set<TimeSlot> slots;
+
+    @ManyToMany()
+    @JoinTable(
+            name = "providers_days",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "day_id")
+    )
+    @EqualsAndHashCode.Exclude
+    @ToString.Exclude
+    @JsonIgnore
+    private Set<Day> days;
 }

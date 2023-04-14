@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Map;
+import java.util.ArrayList;
 
 @Data
 @Builder
@@ -14,6 +14,6 @@ import java.util.Map;
 public class AddPlanningRequest {
     private String token;
     private String email;
-    private Map<Integer,Boolean> daysAvailability;
-    private Map<Integer,Boolean> slotsAvailability;
+    private ArrayList<Integer> daysAvailability;
+    private ArrayList<Integer> slotsAvailability;
 }

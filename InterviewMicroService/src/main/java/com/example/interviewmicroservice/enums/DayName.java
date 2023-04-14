@@ -1,4 +1,4 @@
-package com.example.interviewmicroservice.models;
+package com.example.interviewmicroservice.enums;
 
 public enum DayName {
     SUNDAY,
