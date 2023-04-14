@@ -316,6 +316,27 @@ public class AuthService {
         }
     }
 
+    public ProxyUserResponse getProviderForProxy(String email, String token) {
+        try{
+            User user = repository.findByEmail(email).get();
+            Token tokenObj = tokenRepository.findByToken(token).get();
+            if (tokenRepository.findAllValidTokenByUser(user.getUserId()).contains(tokenObj)){
+                var response = ProxyUserResponse.builder()
+                        .providerId(user.getUserId())
+                        .email(user.getEmail())
+                        .username(user.getUsername())
+                        .build();
+                return response;
+            } else {
+                return null;
+            }
+
+        } catch (Exception e){
+            return null;
+        }
+
+    }
+
 
 
     private void saveUserToken(User user, String jwtToken) {

@@ -4,13 +4,14 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.io.Serializable;
 import java.time.LocalTime;
+import java.util.Set;
 
 
 @Entity
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Table(name = "slots")
 public class TimeSlot implements Serializable  {
 
 
@@ -23,5 +24,8 @@ public class TimeSlot implements Serializable  {
 
     @Column(nullable = false)
     private LocalTime endsAt;
+
+    @ManyToMany(mappedBy = "slots")
+    private Set<Provider> providers;
 
 }

@@ -30,6 +30,13 @@ public class AuthController {
         return service.authenticate(request);
     }
 
+    @GetMapping("/proxy/provider/{id}/{token}")
+    public ProxyUserResponse  proxyProvider(
+            @PathVariable("id") String email,
+            @PathVariable("token") String token){
+        return service.getProviderForProxy(email, token);
+    }
+
     @ExceptionHandler({AuthException.class})
     public ResponseEntity<String> handleAuthException(AuthException e){
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e.getMessage());
