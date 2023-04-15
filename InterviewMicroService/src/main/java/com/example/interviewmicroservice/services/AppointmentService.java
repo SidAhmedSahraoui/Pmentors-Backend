@@ -4,6 +4,7 @@ import com.example.interviewmicroservice.DTOs.AddPlanningRequest;
 import com.example.interviewmicroservice.DTOs.AppointmentRequest;
 import com.example.interviewmicroservice.DTOs.GetPlanningResponse;
 import com.example.interviewmicroservice.DTOs.ProxyUserResponse;
+import com.example.interviewmicroservice.config.Message;
 import com.example.interviewmicroservice.models.*;
 import com.example.interviewmicroservice.proxies.AuthUsersProxy;
 import com.example.interviewmicroservice.repositories.*;
@@ -36,7 +37,7 @@ public class AppointmentService {
     @Autowired
     private final ProviderRepository providerRepository;
 
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, Message> kafkaTemplate;
 
 
     public ResponseEntity<Object> getPlanning(String email){
