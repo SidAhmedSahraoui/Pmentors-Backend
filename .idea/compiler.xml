@@ -12,11 +12,13 @@
         <outputRelativeToContentRoot value="true" />
         <module name="Registry" />
         <module name="Gateway" />
+        <module name="Notification" />
         <module name="AuthUsersMicroService" />
         <module name="InterviewMicroService" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="NotificationMicroService" target="17" />
       <module name="Proxies" target="1.5" />
     </bytecodeTargetLevel>
   </component>
@@ -25,6 +27,8 @@
       <module name="AuthUsersMicroService" options="-parameters" />
       <module name="Gateway" options="-parameters" />
       <module name="InterviewMicroService" options="-parameters" />
+      <module name="Notification" options="-parameters" />
+      <module name="NotificationMicroService" options="-parameters" />
       <module name="Registry" options="-parameters" />
     </option>
   </component>

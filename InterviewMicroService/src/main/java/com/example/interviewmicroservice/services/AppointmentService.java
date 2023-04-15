@@ -4,23 +4,20 @@ import com.example.interviewmicroservice.DTOs.AddPlanningRequest;
 import com.example.interviewmicroservice.DTOs.AppointmentRequest;
 import com.example.interviewmicroservice.DTOs.GetPlanningResponse;
 import com.example.interviewmicroservice.DTOs.ProxyUserResponse;
-import com.example.interviewmicroservice.enums.DayName;
 import com.example.interviewmicroservice.models.*;
 import com.example.interviewmicroservice.proxies.AuthUsersProxy;
 import com.example.interviewmicroservice.repositories.*;
 import com.example.interviewmicroservice.responses.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.aspectj.weaver.patterns.ConcreteCflowPointcut;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalTime;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -38,6 +35,9 @@ public class AppointmentService {
     private final AuthUsersProxy proxy;
     @Autowired
     private final ProviderRepository providerRepository;
+
+    private final KafkaTemplate<String, String> kafkaTemplate;
+
 
     public ResponseEntity<Object> getPlanning(String email){
         try {

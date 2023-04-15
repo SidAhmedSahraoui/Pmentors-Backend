@@ -4,6 +4,8 @@
     <file url="file://$PROJECT_DIR$/AuthUsersMicroService/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Gateway/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/InterviewMicroService/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/Notification/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/NotificationMicroService/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Proxies/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Proxies/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/Registry/src/main/java" charset="UTF-8" />

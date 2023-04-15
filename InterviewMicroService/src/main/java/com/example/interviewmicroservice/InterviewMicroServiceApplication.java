@@ -9,6 +9,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.context.annotation.Bean;
+import org.springframework.kafka.core.KafkaTemplate;
 
 import java.time.LocalTime;
 
@@ -25,7 +27,6 @@ public class InterviewMicroServiceApplication implements CommandLineRunner {
     @Autowired
     private ProviderRepository providerRepository;
 
-
     public static void main(String[] args) {
 
         SpringApplication.run(InterviewMicroServiceApplication.class, args);
@@ -34,7 +35,8 @@ public class InterviewMicroServiceApplication implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
 
-        // Insert all slots
+
+            // Insert all slots
         for (int i = 0 ;  i <= 22 ; i++ ){
             LocalTime start = LocalTime.of(i, 0);
             LocalTime middle = LocalTime.of(i,30);
