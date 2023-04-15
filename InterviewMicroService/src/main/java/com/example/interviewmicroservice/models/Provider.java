@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.Collection;
 import java.util.Set;
 
 
@@ -43,4 +44,9 @@ public class Provider {
     @ToString.Exclude
     @JsonIgnore
     private Set<Day> days;
+
+    @ToString.Exclude
+    @JsonIgnore
+    @OneToMany(mappedBy = "provider", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    private Collection<Appointment> appointments;
 }

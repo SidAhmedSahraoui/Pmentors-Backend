@@ -1,5 +1,6 @@
 package com.example.interviewmicroservice.models;
 import com.example.interviewmicroservice.enums.DayName;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -22,6 +23,7 @@ public class Day implements Serializable  {
     private DayName dayName ;
 
     @ManyToMany(mappedBy = "days")
+    @JsonIgnore
     private Set<Provider> providers;
 
 }

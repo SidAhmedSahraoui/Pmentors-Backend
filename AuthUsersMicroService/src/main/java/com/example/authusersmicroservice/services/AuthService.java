@@ -316,13 +316,13 @@ public class AuthService {
         }
     }
 
-    public ProxyUserResponse getProviderForProxy(String email, String token) {
+    public ProxyUserResponse getUserForProxy(String email, String token) {
         try{
             User user = repository.findByEmail(email).get();
             Token tokenObj = tokenRepository.findByToken(token).get();
             if (tokenRepository.findAllValidTokenByUser(user.getUserId()).contains(tokenObj)){
                 var response = ProxyUserResponse.builder()
-                        .providerId(user.getUserId())
+                        .userId(user.getUserId())
                         .email(user.getEmail())
                         .username(user.getUsername())
                         .build();

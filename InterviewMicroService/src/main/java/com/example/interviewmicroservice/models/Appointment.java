@@ -20,12 +20,26 @@ public class Appointment {
     private Long appointmentId;
 
     @Column(nullable = false)
-    private String userId;
+    private String clientEmail;
 
     @Column(nullable = false)
-    private String providerId;
+    private String providerEmail;
 
     @Column(nullable = false)
     private LocalDate appointmentDate;
+
+    @Column(nullable = false)
+    private LocalTime startsAt;
+
+    @Column(nullable = false)
+    private LocalTime endsAt;
+
+    @ManyToOne
+    @JoinColumn(name="clientId")
+    private Client client;
+
+    @ManyToOne
+    @JoinColumn(name="providerId")
+    private Provider provider;
 
 }

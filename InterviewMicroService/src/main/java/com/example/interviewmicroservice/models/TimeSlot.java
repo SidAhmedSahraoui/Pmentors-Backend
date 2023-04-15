@@ -1,5 +1,6 @@
 package com.example.interviewmicroservice.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 import java.io.Serializable;
@@ -26,6 +27,7 @@ public class TimeSlot implements Serializable  {
     private LocalTime endsAt;
 
     @ManyToMany(mappedBy = "slots")
+    @JsonIgnore
     private Set<Provider> providers;
 
 }

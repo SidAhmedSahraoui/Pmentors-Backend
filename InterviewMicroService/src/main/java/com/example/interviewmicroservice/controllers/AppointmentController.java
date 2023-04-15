@@ -1,6 +1,7 @@
 package com.example.interviewmicroservice.controllers;
 
 import com.example.interviewmicroservice.DTOs.AddPlanningRequest;
+import com.example.interviewmicroservice.DTOs.AppointmentRequest;
 import com.example.interviewmicroservice.models.Day;
 import com.example.interviewmicroservice.models.TimeSlot;
 import com.example.interviewmicroservice.repositories.DayRepository;
@@ -21,10 +22,20 @@ public class AppointmentController {
     private final DayRepository dayRepository;
     private final TimeSlotRepository timeSlotRepository;
 
+    @GetMapping("/{email}")
+    public ResponseEntity<Object> getPlanning(@PathVariable("email") String email){
+        return appointmentService.getPlanning(email);
+    }
     @PostMapping("/add-planning")
-    public ResponseEntity<Object> getProvider(
+    public ResponseEntity<Object> addPlanning(
             @RequestBody AddPlanningRequest request){
         return appointmentService.addPlanning(request);
+    }
+
+    @PostMapping("/add-appointment")
+    public ResponseEntity<Object> addAppointment(
+            @RequestBody AppointmentRequest request){
+        return appointmentService.addAppointment(request);
     }
 
     @GetMapping("/days")

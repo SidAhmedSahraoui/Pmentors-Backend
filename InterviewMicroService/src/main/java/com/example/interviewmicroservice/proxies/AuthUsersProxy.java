@@ -11,8 +11,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 @LoadBalancerClient(name = "Auth-Service")
 public interface AuthUsersProxy {
 
-    @GetMapping("/auth/proxy/provider/{id}/{token}")
-    ProxyUserResponse getProvider(@PathVariable("id") String email,
+    @GetMapping("/auth/proxy/user/{id}/{token}")
+    ProxyUserResponse getUser(@PathVariable("id") String email,
                                   @PathVariable("token") String token);
 
 }
