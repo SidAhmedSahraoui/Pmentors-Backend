@@ -1,5 +1,6 @@
 package com.example.interviewmicroservice;
 
+import com.example.interviewmicroservice.config.Message;
 import com.example.interviewmicroservice.models.*;
 import com.example.interviewmicroservice.enums.DayName;
 import com.example.interviewmicroservice.repositories.*;
@@ -12,6 +13,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.core.KafkaTemplate;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 
 
@@ -34,6 +36,7 @@ public class InterviewMicroServiceApplication implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+
 
 
             // Insert all slots

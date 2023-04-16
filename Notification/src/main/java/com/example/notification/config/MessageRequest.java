@@ -12,7 +12,7 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-public class Message {
+public class MessageRequest {
     private String clientEmail;
     private String providerEmail;
     private String clientPhone;

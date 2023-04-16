@@ -18,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -36,7 +38,7 @@ public class AppointmentService {
     private final AuthUsersProxy proxy;
     @Autowired
     private final ProviderRepository providerRepository;
-
+    @Autowired
     private final KafkaTemplate<String, Message> kafkaTemplate;
 
 
@@ -147,6 +149,16 @@ public class AppointmentService {
                             slot.getEndsAt(),
                             savedClient,
                             provider
+                    ));
+                    kafkaTemplate.send("myTopic", new Message(
+                            appointment.getClientEmail(),
+                            appointment.getProviderEmail(),
+                            "+213655649000",
+                            "+213655649000",
+                            slot.getStartsAt(),
+                            request.getDate(),
+                            LocalTime.now(),
+                            LocalDate.now()
                     ));
                     return new ResponseEntity<Object>(
                             appointment,
