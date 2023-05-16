@@ -10,14 +10,16 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="MsGateway" />
         <module name="Registry" />
-        <module name="Gateway" />
         <module name="Notification" />
         <module name="AuthUsersMicroService" />
         <module name="InterviewMicroService" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="Gateway" target="17" />
+      <module name="GatewayService" target="17" />
       <module name="NotificationMicroService" target="17" />
       <module name="Proxies" target="1.5" />
     </bytecodeTargetLevel>
@@ -26,7 +28,9 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="AuthUsersMicroService" options="-parameters" />
       <module name="Gateway" options="-parameters" />
+      <module name="GatewayService" options="-parameters" />
       <module name="InterviewMicroService" options="-parameters" />
+      <module name="MsGateway" options="-parameters" />
       <module name="Notification" options="-parameters" />
       <module name="NotificationMicroService" options="-parameters" />
       <module name="Registry" options="-parameters" />

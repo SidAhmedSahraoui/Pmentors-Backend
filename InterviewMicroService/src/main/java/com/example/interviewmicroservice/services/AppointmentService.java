@@ -46,7 +46,7 @@ public class AppointmentService {
         try {
             Provider provider = providerRepository.findByEmail(email).orElseGet(()-> null);
             GetPlanningResponse response = new GetPlanningResponse(provider.getDays(),provider.getSlots());
-            return new ResponseEntity<Object>( response, new HttpHeaders(), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<Object>( response, new HttpHeaders(), HttpStatus.OK);
 
         } catch (Exception e){
             log.info("error",e);

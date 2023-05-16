@@ -98,11 +98,13 @@ public class AuthService {
                 .locked(false)
                 .enabled(false)
                 .build();
+
         var savedUser = repository.save(user);
         var jwtToken = jwtService.generateToken(savedUser.getEmail(), Collections.singletonList(role.getRoleName()));
         saveUserToken(savedUser, jwtToken);
         return new ResponseEntity<Object>(AuthResponse.builder()
                 .token(jwtToken)
+                .userId(savedUser.getUserId())
                 .build(), new HttpHeaders(), HttpStatus.OK);
     }
 
@@ -132,6 +134,7 @@ public class AuthService {
                 saveUserToken(user, jwtToken);
                 return new ResponseEntity<>(AuthResponse.builder()
                         .token(jwtToken)
+                        .userId(user.getUserId())
                         .build(), new HttpHeaders(), HttpStatus.OK);
             } else {
                 String error = "Password Incorrect";
@@ -306,6 +309,21 @@ public class AuthService {
             try {
                 Collection<Provider> providers = categoryRepository.findById(categoryId).get().getProviders();
                 return new ResponseEntity<Object>( providers, new HttpHeaders(), HttpStatus.OK);
+
+            } catch (Exception e) {
+                System.out.println(e);
+                return new ResponseEntity<Object>(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error"), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+        } else {
+            return new ResponseEntity<Object>(new ApiResponse(HttpStatus.NOT_FOUND, "Category not found"), new HttpHeaders(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    public ResponseEntity<Object> getCategoryById(Long categoryId) {
+        if(categoryRepository.existsById(categoryId)) {
+            try {
+                var category = categoryRepository.findById(categoryId).get();
+                return new ResponseEntity<Object>( category, new HttpHeaders(), HttpStatus.OK);
 
             } catch (Exception e) {
                 System.out.println(e);

@@ -48,4 +48,8 @@ public class UserController {
     public ResponseEntity<Object> getProvidersByCategory(@PathVariable(value = "id") Long categoryId){
         return service.getProvidersByCategory(categoryId);
     }
+    @GetMapping("/category/{id}/")
+    public ResponseEntity<Object> getCategoryById(@PathVariable(value = "id") Long categoryId){
+        return service.getCategoryById(categoryId);
+    }
 }

@@ -1,6 +1,5 @@
 package com.example.interviewmicroservice;
 
-import com.example.interviewmicroservice.config.Message;
 import com.example.interviewmicroservice.models.*;
 import com.example.interviewmicroservice.enums.DayName;
 import com.example.interviewmicroservice.repositories.*;
@@ -10,10 +9,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
-import org.springframework.context.annotation.Bean;
-import org.springframework.kafka.core.KafkaTemplate;
 
-import java.time.LocalDate;
+
 import java.time.LocalTime;
 
 
@@ -62,5 +59,10 @@ public class InterviewMicroServiceApplication implements CommandLineRunner {
         Provider provider = providerRepository.save(
                 new Provider(null,"admin@admin.com","admin",null,null,null));
 
+        Provider provider1 = providerRepository.save(
+                new Provider(null,"provider1@provider.com","provider1",null,null,null));
+
+        Provider provider2 = providerRepository.save(
+                new Provider(null,"provider2@provider.com","provider2",null,null,null));
     }
 }

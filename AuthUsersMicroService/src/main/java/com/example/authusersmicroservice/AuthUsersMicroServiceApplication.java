@@ -49,24 +49,27 @@ public class AuthUsersMicroServiceApplication implements CommandLineRunner {
         Category category1 =
                 categoryRepository.save(
                         new Category(null,
-                                "Campus France",
-                                "Preparation aux entretiens de démarche de programme campus france ",
+                                "Entretien Campus France",
+                                "Pratiquez l'entretien Campus France avec nos experts n'hésitez plus ! réservez maintenant un entretien 1: 1, " +
+                                        "vous pouvez également réserver un entretien avec un expert pour vous aider à préparer votre dossier de candidature.",
                                 Space.INTERVIEW,
                                 null));
         Category category2 =
                 categoryRepository.save(
                         new Category(null,
-                                "Frontend",
-                                "Preparation au post de FE developer - HTML,CSS,JS ...",
+                                "Frontend Developer Interview",
+                                "Assurez-vous d'avoir les connaissances nécessaires pour obtenir " +
+                                        "votre premier emploi en tant qu'ingénieur frontend et grandir dans " +
+                                        "votre première étape dans le domaine informatique",
                                 Space.INTERVIEW,
                                 null));
 
         Category category3 =
                 categoryRepository.save(
                         new Category(null,
-                                "Backend",
-                                "Preparation au post de BE developer - Java,SQL...",
-                                Space.INTERVIEW,
+                                "Backend Developer Interview",
+                                "Pratiquer toutes les questions de compétences backend," +
+                                        "de la conception de l'API à la mise en œuvre et aux meilleures pratiques, Java, SQL ...",                                Space.INTERVIEW,
                                 null));
 
             User savedAdmin = userRepository.save(
@@ -140,8 +143,8 @@ public class AuthUsersMicroServiceApplication implements CommandLineRunner {
 
             adminRepository.save(new Admin(null,savedAdmin));
             providerRepository.save(new Provider(null,savedAdmin,category1));
-            providerRepository.save(new Provider(null,savedProvider1,category2));
-            providerRepository.save(new Provider(null,savedProvider2,category3));
+            providerRepository.save(new Provider(null,savedProvider1,category1));
+            providerRepository.save(new Provider(null,savedProvider2,category1));
 
     }
 }
