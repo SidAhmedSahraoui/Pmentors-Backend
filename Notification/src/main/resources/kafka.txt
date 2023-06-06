@@ -1,8 +1,0 @@
-Zookeeper start :
-bin/zookeeper-server-start.sh config/zookeeper.properties
-
-Kafka start :
-bin/kafka-server-start.sh config/server.properties
-
-Consumer start :
-bin/kafka-console-consumer.sh --topic myTopic --from-beginning --bootstrap-server localhost:9092

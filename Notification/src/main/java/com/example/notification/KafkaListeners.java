@@ -18,7 +18,7 @@ public class KafkaListeners {
 
 
 
-    @KafkaListener(topics = "myTopic", groupId = "groupId", containerGroup = "messageFactory")
+    @KafkaListener(topics = "topicNotification", groupId = "groupId4", containerGroup = "messageFactory")
     void listener(MessageRequest data) {
         Notification notification =
                 Notification.builder()
@@ -32,10 +32,10 @@ public class KafkaListeners {
                         .time(data.getTime())
                         .date(data.getDate())
                         .build();
-        Twilio.init("AC6cae1612a8df038d4ae48d68a8e3e466",
-                "874ab8ff6c877c0415576b6d59b41549");
+        /*Twilio.init("AC6cae1612a8df038d4ae48d68a8e3e466",
+                "bd3163e39caa7fee6714e5e0e97edef1");
         Message.creator(new PhoneNumber("+213655649000"),
-                new PhoneNumber("+16202979623"), "Hello Sid Ahmed, you have a new appointment 📞").create();
+                new PhoneNumber("+16202979623"), "Hello Sid Ahmed, you have a new appointment 📞").create();*/
         notificationRepository.save(notification);
         System.out.println("Listener received: " + data + " ");
     }

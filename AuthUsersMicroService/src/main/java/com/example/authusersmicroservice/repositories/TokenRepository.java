@@ -22,8 +22,14 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
       """)
     List<Token> findAllValidTokenByUser(Long id);
 
+    @Query("select t from Token t where t.token = ?1")
     Optional<Token> findByToken(String token);
 
+    @Query("select t from Token t where t.token = ?1")
+    Optional<User> findUserByToken(String token);
+
+    @Query("select (count(t) > 0) from Token t where t.token = ?1")
+    Boolean existsByToken(String token);
     @Transactional
     @Modifying
     @Query("delete from Token t where t.user = :owner")

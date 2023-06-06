@@ -22,9 +22,9 @@ public class AppointmentController {
     private final DayRepository dayRepository;
     private final TimeSlotRepository timeSlotRepository;
 
-    @GetMapping("/{email}")
-    public ResponseEntity<Object> getPlanning(@PathVariable("email") String email){
-        return appointmentService.getPlanning(email);
+    @GetMapping("/{id}")
+    public ResponseEntity<Object> getPlanning(@PathVariable("id") Long providerId){
+        return appointmentService.getPlanning(providerId);
     }
     @PostMapping("/add-planning")
     public ResponseEntity<Object> addPlanning(

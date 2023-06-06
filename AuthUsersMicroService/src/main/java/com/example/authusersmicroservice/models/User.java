@@ -45,6 +45,7 @@ public class User implements Serializable, UserDetails {
     @Column(columnDefinition = "boolean default false")
     private Boolean locked = false;
 
+    @JsonIgnore
     @Column(columnDefinition = "boolean default true")
     private Boolean enabled = true;
 

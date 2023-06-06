@@ -42,9 +42,9 @@ public class AppointmentService {
     private final KafkaTemplate<String, Message> kafkaTemplate;
 
 
-    public ResponseEntity<Object> getPlanning(String email){
+    public ResponseEntity<Object> getPlanning(Long providerId){
         try {
-            Provider provider = providerRepository.findByEmail(email).orElseGet(()-> null);
+            Provider provider = providerRepository.findById(providerId).orElseGet(()-> null);;
             GetPlanningResponse response = new GetPlanningResponse(provider.getDays(),provider.getSlots());
             return new ResponseEntity<Object>( response, new HttpHeaders(), HttpStatus.OK);
 
@@ -113,7 +113,7 @@ public class AppointmentService {
                             .build());
             Provider provider;
             try{
-                provider = providerRepository.findByEmail(request.getProviderEmail()).get();
+                provider = providerRepository.findById(request.getProviderId()).get();
             } catch (Exception e){
                 return new ResponseEntity<Object>(
                         new ApiResponse(HttpStatus.NOT_FOUND, "Provider not found"),
@@ -130,7 +130,7 @@ public class AppointmentService {
                         existsByAppointmentDateAndClientEmailAndProviderEmailAndStartsAtAndEndsAt(
                                 request.getDate(),
                                 request.getClientEmail(),
-                                request.getProviderEmail(),
+                                provider.getEmail(),
                                 newSlot.getStartsAt(),
                                 newSlot.getEndsAt()
                                 )){
@@ -150,7 +150,7 @@ public class AppointmentService {
                             savedClient,
                             provider
                     ));
-                    kafkaTemplate.send("myTopic", new Message(
+                    kafkaTemplate.send("topicNotification", new Message(
                             appointment.getClientEmail(),
                             appointment.getProviderEmail(),
                             "+213655649000",

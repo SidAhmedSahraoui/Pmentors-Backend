@@ -24,6 +24,8 @@ spring:
     url: jdbc:mysql://localhost:3306/auth_users
     username: root
     driver-class-name: com.mysql.cj.jdbc.Driver
+  kafka:
+    bootstrap-servers: localhost:9092
   jpa:
     hibernate:
       ddl-auto: create-drop

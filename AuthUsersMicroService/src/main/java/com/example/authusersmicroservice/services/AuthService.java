@@ -352,7 +352,19 @@ public class AuthService {
         } catch (Exception e){
             return null;
         }
-
+    }
+    public ResponseEntity<Object> loadUser(GetUserRequest request) {
+        try{
+            User user = repository.findById(request.getUserId()).get();
+            Token tokenObj = tokenRepository.findByToken(request.getToken()).get();
+            if (tokenRepository.findAllValidTokenByUser(user.getUserId()).contains(tokenObj)){
+                return new ResponseEntity<Object>( user, new HttpHeaders(), HttpStatus.OK);
+            } else {
+                return new ResponseEntity<Object>(new ApiResponse(HttpStatus.UNAUTHORIZED, "Unauthorized"), new HttpHeaders(), HttpStatus.UNAUTHORIZED);
+            }
+        } catch (Exception e){
+            return new ResponseEntity<Object>(new ApiResponse(HttpStatus.NOT_FOUND, "User not found"), new HttpHeaders(), HttpStatus.NOT_FOUND);
+        }
     }
 
 

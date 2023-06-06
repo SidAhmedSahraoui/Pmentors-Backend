@@ -14,7 +14,7 @@ import java.time.LocalDate;
 public class AppointmentRequest {
     private String token;
     private String clientEmail;
-    private String providerEmail;
+    private Long providerId;
     private LocalDate date;
     private Integer day;
     private Integer slot;

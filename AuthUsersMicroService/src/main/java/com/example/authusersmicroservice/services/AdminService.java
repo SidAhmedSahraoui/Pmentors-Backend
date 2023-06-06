@@ -1,5 +1,6 @@
 package com.example.authusersmicroservice.services;
 
+import com.example.authusersmicroservice.config.Message;
 import com.example.authusersmicroservice.errors.ApiError;
 import com.example.authusersmicroservice.errors.ApiResponse;
 import com.example.authusersmicroservice.models.*;
@@ -13,6 +14,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +36,9 @@ public class AdminService {
     private final AdminRepository adminRepository;
     @Autowired
     private RoleRepository roleRepository;
+    @Autowired
+    private final KafkaTemplate<String, Message> kafkaTemplate;
+
 
     public ResponseEntity<Object> createProvider(CreateProviderRequest request) {
 
@@ -96,6 +101,7 @@ public class AdminService {
                 .build();
         try{
             userRepository.save(user);
+
         } catch (Exception e){
             System.out.println(e);
             return new ResponseEntity<Object>(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error"), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -109,7 +115,12 @@ public class AdminService {
                         .category(category)
                                 .build();
         try {
-            providerRepository.save(provider);
+            Provider savedProvider = providerRepository.save(provider);
+            kafkaTemplate.send("topicAddProvider",new Message(
+                    savedProvider.getProviderId(),
+                    request.getEmail(),
+                    request.getUsername()
+            ));
         }catch (Exception e){
             System.out.println(e);
             return new ResponseEntity<Object>(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error"), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
@@ -133,6 +144,11 @@ public class AdminService {
             providerRepository.deleteByUser(user);
             user.setRoles(roles);
             userRepository.save(user);
+            kafkaTemplate.send("topicDeleteProvider",new Message(
+                    user.getUserId(),
+                    user.getEmail(),
+                    user.getUsername()
+            ));
             return new ResponseEntity<Object>(new ApiResponse(HttpStatus.OK, "Provider removed"), new HttpHeaders(), HttpStatus.OK);
         } catch (Exception e) {
             System.out.println(e);
@@ -159,7 +175,12 @@ public class AdminService {
            Category category = categoryRepository.findByTitle(request.getCategoryTitle());
            try{
                User savedUser = userRepository.save(user);
-               providerRepository.save(new Provider(null,savedUser,category));
+               Provider savedProvider = providerRepository.save(new Provider(null,savedUser,category));
+               kafkaTemplate.send("topicUpdateProvider",new Message(
+                       savedProvider.getProviderId(),
+                       savedUser.getEmail(),
+                       savedUser.getUsername()
+               ));
                return new ResponseEntity<Object>(new ApiResponse(HttpStatus.OK, "User account upgraded to provider"), new HttpHeaders(), HttpStatus.OK);
            }catch (Exception e){
                System.out.println(e);
@@ -254,17 +275,6 @@ public class AdminService {
             return new ResponseEntity<Object>(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error"), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    /*public ResponseEntity<Object> getAllUsersByRole(Integer role){
-        if (role == 0 || role == 1 || role == 2){
-            try {
-                return new ResponseEntity<Object>( userRepository.findUsersByRole(role == 0 ? RoleName.ADMIN : (role == 1 ? RoleName.PROVIDER : RoleName.USER)), new HttpHeaders(), HttpStatus.OK);
-            }catch (Exception e){
-                System.out.println(e);
-                return new ResponseEntity<Object>(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error"), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-        }
-        return new ResponseEntity<Object>(new ApiResponse(HttpStatus.NOT_ACCEPTABLE, "Role not found"), new HttpHeaders(), HttpStatus.NOT_ACCEPTABLE);
-    }*/
 
     public ResponseEntity<Object> getAllAdmins(){
             try {
