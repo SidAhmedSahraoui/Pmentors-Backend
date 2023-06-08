@@ -2,8 +2,10 @@ package com.example.interviewmicroservice.repositories;
 
 import com.example.interviewmicroservice.models.Appointment;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -25,4 +27,14 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
                                                                                       @Param("p") String provider,
                                                                                       @Param("s") LocalTime startsAt,
                                                                                       @Param("e") LocalTime endsAt);
+    @Query("select a from Appointment a where a.clientEmail = ?1")
+    List<Appointment> findAllByClient(String clientEmail);
+
+    @Query("select a from Appointment a where a.providerEmail = ?1")
+    List<Appointment> findAllByProvider(String providerEmail);
+
+    @Transactional
+    @Modifying
+    @Query("delete from Appointment a where a.appointmentId = :id")
+    int deleteByAppointmentId(@Param("id") Long id);
 }

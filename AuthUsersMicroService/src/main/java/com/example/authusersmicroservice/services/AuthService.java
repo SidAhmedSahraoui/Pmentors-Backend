@@ -334,20 +334,14 @@ public class AuthService {
         }
     }
 
-    public ProxyUserResponse getUserForProxy(String email, String token) {
+    public ProxyUserResponse getUserForProxy(String email) {
         try{
             User user = repository.findByEmail(email).get();
-            Token tokenObj = tokenRepository.findByToken(token).get();
-            if (tokenRepository.findAllValidTokenByUser(user.getUserId()).contains(tokenObj)){
                 var response = ProxyUserResponse.builder()
-                        .userId(user.getUserId())
                         .email(user.getEmail())
                         .username(user.getUsername())
                         .build();
                 return response;
-            } else {
-                return null;
-            }
 
         } catch (Exception e){
             return null;

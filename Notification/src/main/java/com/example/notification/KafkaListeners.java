@@ -24,20 +24,25 @@ public class KafkaListeners {
                 Notification.builder()
                         .notificationId(null)
                         .clientEmail(data.getClientEmail())
-                        .providerEmail(data.getProviderEmail())
-                        .clientPhone(data.getClientPhone())
-                        .providerPhone(data.getProviderPhone())
                         .appointmentDate(data.getAppointmentDate())
                         .startsAt(data.getStartsAt())
                         .time(data.getTime())
                         .date(data.getDate())
                         .build();
         /*Twilio.init("AC6cae1612a8df038d4ae48d68a8e3e466",
-                "bd3163e39caa7fee6714e5e0e97edef1");
+                "89d4d4650f9eb684dd8d8b2cabc3ee7c");
         Message.creator(new PhoneNumber("+213655649000"),
                 new PhoneNumber("+16202979623"), "Hello Sid Ahmed, you have a new appointment 📞").create();*/
         notificationRepository.save(notification);
         System.out.println("Listener received: " + data + " ");
     }
 
+    @KafkaListener(topics = "topicNotificationCancel", groupId = "groupId5", containerGroup = "messageFactory")
+    void listener2(MessageRequest data) {
+        /*Twilio.init("AC6cae1612a8df038d4ae48d68a8e3e466",
+                "89d4d4650f9eb684dd8d8b2cabc3ee7c");
+        Message.creator(new PhoneNumber("+213655649000"),
+                new PhoneNumber("+16202979623"), "Hello Sid Ahmed, you have one appointment canceled by: " + data.getClientEmail()).create();*/
+        System.out.println("Listener received: " + data + " ");
+    }
 }

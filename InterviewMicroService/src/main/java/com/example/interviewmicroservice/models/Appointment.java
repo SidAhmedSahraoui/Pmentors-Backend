@@ -34,6 +34,9 @@ public class Appointment {
     @Column(nullable = false)
     private LocalTime endsAt;
 
+    @Column(nullable = false)
+    private Boolean isPayed;
+
     @ManyToOne
     @JoinColumn(name="clientId")
     private Client client;

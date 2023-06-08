@@ -24,10 +24,10 @@ public class AdminController {
         return adminService.createProvider(request);
     }
 
-    @DeleteMapping("/delete-provider/{providerId}")
-    public ResponseEntity<Object> removeProvider(@PathVariable Long providerId){
+    @DeleteMapping("/delete-provider/{username}")
+    public ResponseEntity<Object> removeProvider(@PathVariable String username){
 
-        return adminService.deleteProvider(providerId);
+        return adminService.deleteProvider(username);
     }
 
     @PatchMapping("/upgrade-provider")

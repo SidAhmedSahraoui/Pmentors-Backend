@@ -30,11 +30,10 @@ public class AuthController {
         return service.authenticate(request);
     }
 
-    @GetMapping("/proxy/user/{id}/{token}")
+    @GetMapping("/proxy/user/{email}")
     public ProxyUserResponse  getUserForProxy(
-            @PathVariable("id") String email,
-            @PathVariable("token") String token){
-        return service.getUserForProxy(email, token);
+            @PathVariable("email") String email){
+        return service.getUserForProxy(email);
     }
 
     @PostMapping("/user")

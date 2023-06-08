@@ -5,6 +5,7 @@ import com.example.interviewmicroservice.DTOs.AppointmentRequest;
 import com.example.interviewmicroservice.DTOs.GetPlanningResponse;
 import com.example.interviewmicroservice.DTOs.ProxyUserResponse;
 import com.example.interviewmicroservice.config.Message;
+
 import com.example.interviewmicroservice.models.*;
 import com.example.interviewmicroservice.proxies.AuthUsersProxy;
 import com.example.interviewmicroservice.repositories.*;
@@ -41,10 +42,9 @@ public class AppointmentService {
     @Autowired
     private final KafkaTemplate<String, Message> kafkaTemplate;
 
-
-    public ResponseEntity<Object> getPlanning(Long providerId){
+    public ResponseEntity<Object> getPlanning(String username){
         try {
-            Provider provider = providerRepository.findById(providerId).orElseGet(()-> null);;
+            Provider provider = providerRepository.findByUsername(username).orElseGet(()-> null);;
             GetPlanningResponse response = new GetPlanningResponse(provider.getDays(),provider.getSlots());
             return new ResponseEntity<Object>( response, new HttpHeaders(), HttpStatus.OK);
 
@@ -59,12 +59,12 @@ public class AppointmentService {
 
         try {
 
-            ProxyUserResponse response = proxy.getUser(request.getEmail(), request.getToken());
+            ProxyUserResponse response = proxy.getUser(request.getEmail());
 
              Provider provider =
                      providerRepository.findByEmail(response.getEmail())
                      .orElseGet(() -> Provider.builder()
-                     .providerId(response.getUserId())
+                     .providerId(null)
                      .username(response.getUsername())
                      .email(response.getEmail())
                      .slots(null)
@@ -103,17 +103,17 @@ public class AppointmentService {
 
     public ResponseEntity<Object> addAppointment(AppointmentRequest request){
         try {
-            ProxyUserResponse response = proxy.getUser(request.getClientEmail(), request.getToken());
+            ProxyUserResponse response = proxy.getUser(request.getClientEmail());
             Client client = clientRepository.findClientByEmail(response.getEmail())
                     .orElseGet(()-> Client.builder()
-                            .clientId(response.getUserId())
+                            .clientId(null)
                             .username(response.getUsername())
                             .email(response.getEmail())
                             .appointments(null)
                             .build());
             Provider provider;
             try{
-                provider = providerRepository.findById(request.getProviderId()).get();
+                provider = providerRepository.findByUsername(request.getProviderUsername()).get();
             } catch (Exception e){
                 return new ResponseEntity<Object>(
                         new ApiResponse(HttpStatus.NOT_FOUND, "Provider not found"),
@@ -147,6 +147,7 @@ public class AppointmentService {
                             request.getDate(),
                             slot.getStartsAt(),
                             slot.getEndsAt(),
+                            false,
                             savedClient,
                             provider
                     ));
@@ -176,5 +177,30 @@ public class AppointmentService {
                     new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    public ResponseEntity<Object> deleteAppointment(Long appointmentId){
+        try {
+            Appointment appointment = appointmentRepository.findById(appointmentId).get();
+            appointmentRepository.deleteByAppointmentId(appointmentId);
+            kafkaTemplate.send("topicNotificationCancel", new Message(
+                    appointment.getClientEmail(),
+                    appointment.getProviderEmail(),
+                    "+213655649000",
+                    "+213655649000",
+                    appointment.getStartsAt(),
+                    appointment.getAppointmentDate(),
+                    LocalTime.now(),
+                    LocalDate.now()
+
+            ));
+            return new ResponseEntity<Object>(
+                    new ApiResponse(HttpStatus.OK, "Appointment deleted"),
+                    new HttpHeaders(), HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<Object>(
+                    new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Server error"),
+                    new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
 }

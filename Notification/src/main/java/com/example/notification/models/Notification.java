@@ -23,9 +23,7 @@ public class Notification {
     private Long notificationId;
 
     private String clientEmail;
-    private String providerEmail;
-    private String clientPhone;
-    private String providerPhone;
+    private String message;
     private LocalTime startsAt;
     private LocalDate appointmentDate;
     private LocalTime time;

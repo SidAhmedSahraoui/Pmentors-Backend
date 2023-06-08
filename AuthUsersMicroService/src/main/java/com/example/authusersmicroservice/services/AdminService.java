@@ -92,6 +92,7 @@ public class AdminService {
         roles.add(userRole);
 
         var user = User.builder()
+
                 .username(request.getUsername())
                 .firstName(request.getFirstname())
                 .lastName(request.getLastname())
@@ -111,6 +112,7 @@ public class AdminService {
         Category category = categoryRepository.findByTitle(request.getCategoryTitle());
 
         var provider = Provider.builder()
+                        .providerId(user.getUserId())
                         .user(user)
                         .category(category)
                                 .build();
@@ -127,8 +129,8 @@ public class AdminService {
         }
         return new ResponseEntity<Object>(new ApiResponse(HttpStatus.OK, "Provider account added"), new HttpHeaders(), HttpStatus.OK);
     }
-    public ResponseEntity<Object> deleteProvider(Long providerId) {
-        if (!providerRepository.existsById(providerId)){
+    public ResponseEntity<Object> deleteProvider(String username) {
+        if (!providerRepository.existsByUserUsername(username)){
             String error = "Provider not found";
             ApiError apiError = new ApiError(HttpStatus.BAD_REQUEST, "Invalid Credentials",error);
             return new ResponseEntity<Object>(
@@ -136,7 +138,7 @@ public class AdminService {
         }
 
         try{
-            Provider provider = providerRepository.findById(providerId).get();
+            Provider provider = providerRepository.findByUserUsername(username).get();
             User user = provider.getUser();
             Role role = roleRepository.findByRoleName(RoleName.USER);
             var roles = new ArrayList<Role>();
@@ -175,9 +177,9 @@ public class AdminService {
            Category category = categoryRepository.findByTitle(request.getCategoryTitle());
            try{
                User savedUser = userRepository.save(user);
-               Provider savedProvider = providerRepository.save(new Provider(null,savedUser,category));
+               Provider savedProvider = providerRepository.save(new Provider(savedUser.getUserId(), savedUser,category));
                kafkaTemplate.send("topicUpdateProvider",new Message(
-                       savedProvider.getProviderId(),
+                       savedUser.getUserId(),
                        savedUser.getEmail(),
                        savedUser.getUsername()
                ));

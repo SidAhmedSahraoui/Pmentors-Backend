@@ -10,7 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProxyUserResponse {
-    private Long userId;
     private String email;
     private String username;
 }

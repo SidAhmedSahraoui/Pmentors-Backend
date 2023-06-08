@@ -9,6 +9,5 @@ import lombok.AllArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProxyUserRequest {
-    private String token;
     private String email;
 }
