@@ -37,6 +37,9 @@ public class Appointment {
     @Column(nullable = false)
     private Boolean isPayed;
 
+    @Column
+    private String link;
+
     @ManyToOne
     @JoinColumn(name="clientId")
     private Client client;

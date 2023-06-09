@@ -118,7 +118,6 @@ public class AuthUsersMicroServiceApplication implements CommandLineRunner {
                         new ArrayList<>()));
         // admin
         savedAdmin.getRoles().add(userRole);
-        savedAdmin.getRoles().add(providerRole);
         savedAdmin.getRoles().add(adminRole);
 
         // provider 1
@@ -142,7 +141,6 @@ public class AuthUsersMicroServiceApplication implements CommandLineRunner {
         userRepository.save(savedUser3);
 
             adminRepository.save(new Admin(null,savedAdmin));
-            providerRepository.save(new Provider(null,savedAdmin,category1));
             providerRepository.save(new Provider(null,savedProvider1,category1));
             providerRepository.save(new Provider(null,savedProvider2,category1));
 

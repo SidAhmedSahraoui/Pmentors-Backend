@@ -2,16 +2,22 @@ package com.example.interviewmicroservice.controllers;
 
 import com.example.interviewmicroservice.DTOs.AddPlanningRequest;
 import com.example.interviewmicroservice.DTOs.AppointmentRequest;
+import com.example.interviewmicroservice.DTOs.PaymentRequest;
 import com.example.interviewmicroservice.models.*;
 import com.example.interviewmicroservice.repositories.*;
 import com.example.interviewmicroservice.responses.ApiResponse;
 import com.example.interviewmicroservice.services.AppointmentService;
+import jakarta.ws.rs.NotFoundException;
 import lombok.AllArgsConstructor;
 import org.hibernate.sql.ast.tree.expression.Collation;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -28,6 +34,7 @@ public class AppointmentController {
     private final ClientRepository clientRepository;
     private final ProviderRepository providerRepository;
     private final AppointmentRepository appointmentRepository;
+    private final PaymentRepository paymentRepository;
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> getPlanning(@PathVariable("id") String username){
@@ -80,19 +87,52 @@ public class AppointmentController {
     public ResponseEntity<Object> deleteAppointment(@PathVariable("id") Long id){
         return appointmentService.deleteAppointment(id);
     }
-
-    @PutMapping("/payment/{id}")
-    public ResponseEntity<Object> payment(@PathVariable("id") Long id){
-        Appointment appointment = appointmentRepository.findById(id).orElseGet(() -> null);
-        if (appointment != null){
+        @PostMapping(value = "/payment", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+        public ResponseEntity<Object> payment(@RequestParam("file") MultipartFile file,
+                                              @RequestParam("email") String email,
+                                              @RequestParam("username") String username,
+                                              @RequestParam("appointmentId") Long appointmentId){
+        Appointment appointment = appointmentRepository.findById(appointmentId).orElseGet(() -> null);
+            if (appointment != null){
             appointment.setIsPayed(true);
-            appointmentRepository.save(appointment);
-            return new ResponseEntity<Object>(
-                    new ApiResponse(HttpStatus.OK, "Appointment payed"),
-                    new HttpHeaders(), HttpStatus.OK);
+            Appointment savedAppointment = appointmentRepository.save(appointment);
+                try {
+                    byte[] imageData = file.getBytes();
+                    Payment payment = Payment.builder()
+                            .paymentId(null)
+                            .appointmentId(savedAppointment.getAppointmentId())
+                            .email(email)
+                            .username(username)
+                            .file(imageData)
+                            .build();
+                    paymentRepository.save(payment);
+                    return new ResponseEntity<Object>(
+                            new ApiResponse(HttpStatus.OK, "Appointment payed"),
+                            new HttpHeaders(), HttpStatus.OK);
+                } catch (Exception e){
+                    return new ResponseEntity<Object>(
+                            new ApiResponse(HttpStatus.BAD_REQUEST, "Something went wrong"),
+                            new HttpHeaders(), HttpStatus.BAD_REQUEST);
+                }
+
         }
         return new ResponseEntity<Object>(
                 new ApiResponse(HttpStatus.NOT_FOUND, "Appointment not found"),
                 new HttpHeaders(), HttpStatus.NOT_FOUND);
+    }
+    @GetMapping("/download/{id}")
+    public ResponseEntity<Resource> downloadImage(@PathVariable Long id) {
+        // Retrieve the image entity from the database
+        Payment payment = paymentRepository.findByAppointmentId(id)
+                .orElseThrow(() -> new NotFoundException("Payment not found"));
+
+        // Create a ByteArrayResource from the image data
+        ByteArrayResource resource = new ByteArrayResource(payment.getFile());
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=image.jpg")
+                .contentType(MediaType.IMAGE_JPEG)
+                .contentLength(resource.contentLength())
+                .body(resource);
     }
 }
