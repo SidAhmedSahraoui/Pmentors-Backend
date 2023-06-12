@@ -45,3 +45,82 @@ services:
       echo -e 'Successfully created the following topics:'
       kafka-topics --bootstrap-server kafka:29092 --list
       "
+      
+
+  eureka:
+    image: registry
+    ports:
+      - 8888:8888
+
+  gateway:
+    image: gateway
+    depends_on:
+      - eureka
+    ports:
+      - 7777:7777
+    environment:
+      profile: "default"
+      eureka.client.serviceUrl.defaultZone: "http://eureka-server:8888/eureka"
+    restart: on-failure
+
+  auth-service:
+    image: auth-service
+    depends_on:
+      - eureka
+      - gateway
+      - db-mysql-auth
+      - kafka
+
+    environment:
+      profile: "default"
+      eureka.client.serviceUrl.defaultZone: "http://eureka-server:8888/eureka"
+    restart: on-failure
+
+  interview-service:
+    image: interview-service
+    depends_on:
+      - eureka
+      - gateway
+      - kafka
+      - db-mysql-interview
+
+    environment:
+      profile: "default"
+      eureka.client.serviceUrl.defaultZone: "http://eureka-server:8888/eureka"
+    restart: on-failure
+
+  notification-service:
+    image: notification-service
+    depends_on:
+      - eureka
+      - gateway
+      - kafka
+      - db-mysql-notification
+
+    environment:
+      profile: "default"
+      eureka.client.serviceUrl.defaultZone: "http://eureka-server:8888/eureka"
+    restart: on-failure
+
+  db-mysql-auth:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: auth_users
+
+  db-mysql-interview:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: interviews
+
+  db-mysql-notification:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: notifications
+
+

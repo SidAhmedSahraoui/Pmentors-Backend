@@ -274,7 +274,7 @@ public class AuthService {
     public ResponseEntity<Object> getCategoriesBySpaceName(Integer spaceId) {
         if(spaceId == 0) {
             try {
-                List<Category> categories = categoryRepository.findCategoriesBySpace(Space.INTERVIEW);
+                List<Category> categories = categoryRepository.findAllBySpace(Space.INTERVIEW);
                 return new ResponseEntity<Object>( categories, new HttpHeaders(), HttpStatus.OK);
 
             } catch (Exception e) {
@@ -283,7 +283,7 @@ public class AuthService {
             }
         } else if (spaceId == 1) {
             try {
-                List<Category> categories = categoryRepository.findCategoriesBySpace(Space.CONSULTATION);
+                List<Category> categories = categoryRepository.findAllBySpace(Space.CONSULTATION);
                 return new ResponseEntity<Object>( categories, new HttpHeaders(), HttpStatus.OK);
 
             } catch (Exception e) {
@@ -292,7 +292,7 @@ public class AuthService {
             }
         } else if (spaceId == 2) {
             try {
-                List<Category> categories = categoryRepository.findCategoriesBySpace(Space.SHARING_EXPERIENCE);
+                List<Category> categories = categoryRepository.findAllBySpace(Space.SHARING_EXPERIENCE);
                 return new ResponseEntity<Object>( categories, new HttpHeaders(), HttpStatus.OK);
 
             } catch (Exception e) {
@@ -301,6 +301,17 @@ public class AuthService {
             }
         } else {
             return new ResponseEntity<Object>(new ApiResponse(HttpStatus.NOT_FOUND, "Categories not found"), new HttpHeaders(), HttpStatus.NOT_FOUND);
+        }
+    }
+
+    public ResponseEntity<Object> getCategoriesByType(String type){
+        try {
+            List<Category> categories = categoryRepository.findAllByType(type);
+            return new ResponseEntity<Object>( categories, new HttpHeaders(), HttpStatus.OK);
+
+        } catch (Exception e) {
+            System.out.println(e);
+            return new ResponseEntity<Object>(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error"), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class CategoryRequest {
 
     private String title;
+    private String type;
     private String description;
     private Integer space;
 

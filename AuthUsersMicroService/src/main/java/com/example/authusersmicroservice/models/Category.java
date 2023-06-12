@@ -25,6 +25,9 @@ public class Category {
     private String description;
 
     @Column(nullable = false)
+    private String type;
+
+    @Column(nullable = false)
     private Space space;
 
     @ToString.Exclude
