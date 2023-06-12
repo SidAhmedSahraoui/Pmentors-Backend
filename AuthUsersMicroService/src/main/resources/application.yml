@@ -42,3 +42,6 @@ application:
       expiration: 60000 # 86400000 # a day
       refresh-token:
         expiration: 604800000 # 7 days
+gcp:
+  firebase:
+    service-account=classpath:firebase-service-account.json

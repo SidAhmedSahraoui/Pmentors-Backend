@@ -45,13 +45,13 @@ public class AuthUsersMicroServiceApplication implements CommandLineRunner {
         Role userRole = roleRepository.save(new Role(RoleName.USER));
         Role providerRole = roleRepository.save(new Role(RoleName.PROVIDER));
 
-
         Category category1 =
                 categoryRepository.save(
                         new Category(null,
                                 "Entretien Campus France",
                                 "Pratiquez l'entretien Campus France avec nos experts n'hésitez plus ! réservez maintenant un entretien 1: 1, " +
                                         "vous pouvez également réserver un entretien avec un expert pour vous aider à préparer votre dossier de candidature.",
+                                "study",
                                 Space.INTERVIEW,
                                 null));
         Category category2 =
@@ -61,7 +61,9 @@ public class AuthUsersMicroServiceApplication implements CommandLineRunner {
                                 "Assurez-vous d'avoir les connaissances nécessaires pour obtenir " +
                                         "votre premier emploi en tant qu'ingénieur frontend et grandir dans " +
                                         "votre première étape dans le domaine informatique",
+                                "hiring",
                                 Space.INTERVIEW,
+
                                 null));
 
         Category category3 =
@@ -69,28 +71,54 @@ public class AuthUsersMicroServiceApplication implements CommandLineRunner {
                         new Category(null,
                                 "Backend Developer Interview",
                                 "Pratiquer toutes les questions de compétences backend," +
-                                        "de la conception de l'API à la mise en œuvre et aux meilleures pratiques, Java, SQL ...",                                Space.INTERVIEW,
+                                        "de la conception de l'API à la mise en œuvre et aux meilleures pratiques, Java, SQL ...",
+                                "hiring",
+                                Space.INTERVIEW,
                                 null));
 
+        Category category4 =
+                categoryRepository.save(
+                        new Category(null,
+                                "Study in Canada",
+                                "Choisissez le pays et l'université : Renseignez-vous sur les différents pays et les universités qui offrent les programmes d'études qui vous intéressent. Considérez des facteurs tels que la réputation académique, les frais de scolarité, etc.",
+                                "study",
+                                Space.INTERVIEW,
+                                null));
+        Category category5 =
+                categoryRepository.save(
+                        new Category(null,
+                                 "Study in Turkey",
+                                "Préparez les documents nécessaires : Rassemblez les documents requis pour votre candidature, tels que les relevés de notes, les lettres de recommandation, les essais personnels, etc. Vérifiez les exigences spécifiques de chaque université.",
+                                "study",
+                                Space.INTERVIEW,
+                                null));
             User savedAdmin = userRepository.save(
                     new User("admin",
                             "admin",
                             "admin",
-                            "admin@admin.com",
+                            "admin@esi.dz",
                             passwordEncoder.encode("Admin@123"),
                             new ArrayList<>()));
         User savedProvider1 = userRepository.save(
                 new User("provider1",
-                        "provider",
-                        "provider",
-                        "provider1@provider.com",
+                        "ahmed",
+                        "ahmed",
+                        "provider1@esi.dz",
                         passwordEncoder.encode("Provider@123"),
                         new ArrayList<>()));
         User savedProvider2 = userRepository.save(
                 new User("provider2",
-                        "provider",
-                        "provider",
-                        "provider2@provider.com",
+                        "ali",
+                        "ali",
+                        "provider2@esi.dz",
+                        passwordEncoder.encode("Provider@123"),
+                        new ArrayList<>()));
+
+        User savedProvider3 = userRepository.save(
+                new User("provider3",
+                        "MOHAMED",
+                        "mohamed",
+                        "provider3@esi.dz",
                         passwordEncoder.encode("Provider@123"),
                         new ArrayList<>()));
 
@@ -128,6 +156,10 @@ public class AuthUsersMicroServiceApplication implements CommandLineRunner {
         savedProvider2.getRoles().add(userRole);
         savedProvider2.getRoles().add(providerRole);
 
+        // provider 3
+        savedProvider3.getRoles().add(userRole);
+        savedProvider3.getRoles().add(providerRole);
+
         // users
         savedUser1.getRoles().add(userRole);
         savedUser2.getRoles().add(userRole);
@@ -136,13 +168,16 @@ public class AuthUsersMicroServiceApplication implements CommandLineRunner {
         userRepository.save(savedAdmin);
         userRepository.save(savedProvider1);
         userRepository.save(savedProvider2);
+        userRepository.save(savedProvider3);
         userRepository.save(savedUser1);
         userRepository.save(savedUser2);
         userRepository.save(savedUser3);
 
             adminRepository.save(new Admin(null,savedAdmin));
             providerRepository.save(new Provider(null,savedProvider1,category1));
-            providerRepository.save(new Provider(null,savedProvider2,category1));
+            providerRepository.save(new Provider(null,savedProvider2,category2));
+            providerRepository.save(new Provider(null,savedProvider3,category3));
+
 
     }
 }

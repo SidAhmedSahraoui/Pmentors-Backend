@@ -205,6 +205,7 @@ public class AdminService {
         }
         var category = Category.builder()
                 .title(request.getTitle())
+                .type(request.getType())
                 .description(request.getDescription())
                 .build();
 
