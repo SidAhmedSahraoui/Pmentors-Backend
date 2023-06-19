@@ -19,7 +19,7 @@ spring:
   main:
     allow-bean-definition-overriding: true
   datasource:
-    password: root
+    password: 1403
     url: jdbc:mysql://localhost:3306/notifications
     username: root
     driver-class-name: com.mysql.cj.jdbc.Driver

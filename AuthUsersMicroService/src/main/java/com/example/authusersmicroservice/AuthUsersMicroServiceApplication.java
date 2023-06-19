@@ -96,21 +96,21 @@ public class AuthUsersMicroServiceApplication implements CommandLineRunner {
                     new User("admin",
                             "admin",
                             "admin",
-                            "admin@esi.dz",
+                            "admin@pmentors.dz",
                             passwordEncoder.encode("Admin@123"),
                             new ArrayList<>()));
         User savedProvider1 = userRepository.save(
                 new User("provider1",
                         "ahmed",
                         "ahmed",
-                        "provider1@esi.dz",
+                        "provider1@pmentors.dz",
                         passwordEncoder.encode("Provider@123"),
                         new ArrayList<>()));
         User savedProvider2 = userRepository.save(
                 new User("provider2",
                         "ali",
                         "ali",
-                        "provider2@esi.dz",
+                        "provider2@pmentors.dz",
                         passwordEncoder.encode("Provider@123"),
                         new ArrayList<>()));
 
@@ -118,7 +118,7 @@ public class AuthUsersMicroServiceApplication implements CommandLineRunner {
                 new User("provider3",
                         "MOHAMED",
                         "mohamed",
-                        "provider3@esi.dz",
+                        "provider3@pmentors.dz",
                         passwordEncoder.encode("Provider@123"),
                         new ArrayList<>()));
 
@@ -126,14 +126,14 @@ public class AuthUsersMicroServiceApplication implements CommandLineRunner {
                 new User("user1",
                         "user",
                         "user",
-                        "user1@user.com",
+                        "user1@pmentors.dz",
                         passwordEncoder.encode("User@123"),
                         new ArrayList<>()));
         User savedUser2 = userRepository.save(
                 new User("user2",
                         "user",
                         "user",
-                        "user2@user.com",
+                        "user2@pmentors.dz",
                         passwordEncoder.encode("User@123"),
                         new ArrayList<>()));
 
@@ -141,7 +141,7 @@ public class AuthUsersMicroServiceApplication implements CommandLineRunner {
                 new User("user3",
                         "user",
                         "user",
-                        "user3@user.com",
+                        "user3@pmentors.dz",
                         passwordEncoder.encode("User@123"),
                         new ArrayList<>()));
         // admin

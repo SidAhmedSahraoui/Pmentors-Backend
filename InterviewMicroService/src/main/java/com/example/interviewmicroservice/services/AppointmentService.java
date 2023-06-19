@@ -143,16 +143,6 @@ public class AppointmentService {
                 } else {
                     Client savedClient = clientRepository.save(client);
                     TimeSlot slot = timeSlotRepository.findById(request.getSlot()).get();
-                    String VIDEOSDK_API_KEY = "217829d5-b9ad-4bb2-8139-e9297106f380";
-                    String VIDEOSDK_SECRET_KEY = "3e59f56f4cbda365a89c1563e493942dca124ef01c6450d45e7fe2d93e487534";
-
-                    Map<String, Object> payload = new HashMap<>();
-                    payload.put("apikey", VIDEOSDK_API_KEY);
-                    payload.put("permissions", new String[]{"allow_join", "allow_mod"});
-
-                    String token = Jwts.builder().setClaims(payload)
-                            .setExpiration(new Date(System.currentTimeMillis() + 7200 * 1000))
-                            .signWith(SignatureAlgorithm.HS256,VIDEOSDK_SECRET_KEY.getBytes()).compact();
 
                     Appointment appointment = appointmentRepository.save(new Appointment(
                             null,
@@ -162,7 +152,7 @@ public class AppointmentService {
                             slot.getStartsAt(),
                             slot.getEndsAt(),
                             false,
-                            null,
+                            request.getLink(),
                             savedClient,
                             provider
                     ));

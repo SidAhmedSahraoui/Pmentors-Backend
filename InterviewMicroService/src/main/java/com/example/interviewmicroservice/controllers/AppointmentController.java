@@ -22,6 +22,9 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.*;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 
 @AllArgsConstructor
 @RestController
@@ -134,5 +137,22 @@ public class AppointmentController {
                 .contentType(MediaType.IMAGE_JPEG)
                 .contentLength(resource.contentLength())
                 .body(resource);
+    }
+
+    @GetMapping("/get-token")
+    public String getToken() {
+
+
+        String VIDEOSDK_API_KEY = "10118176-26c7-4378-a3bc-7f85bad0ee00";
+        String VIDEOSDK_SECRET_KEY = "2ca68eb067fbbec51114cb4f0170539c62ebf31123569ebfbac6633f6ba463f8";
+
+        Map<String, Object> payload = new HashMap<>();
+        payload.put("apikey", VIDEOSDK_API_KEY);
+        payload.put("permissions", new String[]{"allow_join", "allow_mod"});
+
+        String token = Jwts.builder().setClaims(payload)
+                .setExpiration(new Date(System.currentTimeMillis() + 7200 * 1000))
+                .signWith(SignatureAlgorithm.HS256,VIDEOSDK_SECRET_KEY.getBytes()).compact();
+        return token;
     }
 }

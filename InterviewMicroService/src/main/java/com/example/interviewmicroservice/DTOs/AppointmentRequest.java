@@ -18,4 +18,5 @@ public class AppointmentRequest {
     private LocalDate date;
     private Integer day;
     private Integer slot;
+    private String link;
 }

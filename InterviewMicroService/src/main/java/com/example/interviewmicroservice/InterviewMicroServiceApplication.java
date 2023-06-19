@@ -57,12 +57,12 @@ public class InterviewMicroServiceApplication implements CommandLineRunner {
         dayRepository.save(new Day(7, DayName.SATURDAY,null));
 
         Provider provider = providerRepository.save(
-                new Provider(null,"admin@admin.com","admin",null,null,null));
+                new Provider(null,"admin@pmentors.dz","admin",null,null,null));
 
         Provider provider1 = providerRepository.save(
-                new Provider(null,"provider1@provider.com","provider1",null,null,null));
+                new Provider(null,"provider1@pmentors.dz","provider1",null,null,null));
 
         Provider provider2 = providerRepository.save(
-                new Provider(null,"provider2@provider.com","provider2",null,null,null));
+                new Provider(null,"provider2@pmentors.com","provider2",null,null,null));
     }
 }
