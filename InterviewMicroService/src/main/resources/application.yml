@@ -24,18 +24,18 @@ spring:
   main:
     allow-bean-definition-overriding: true
   datasource:
-    password: 1403
-    url: jdbc:mysql://localhost:3306/interviews
-    username: root
-    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:postgresql://host.docker.internal:5432/interviews
+    username: my_user
+    password: my_password
+    driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: create-drop
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.MySQLDialect
+        dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     show-sql: true
-    database: mysql
+    database: postgresql
   kafka:
     bootstrap-servers: localhost:9092

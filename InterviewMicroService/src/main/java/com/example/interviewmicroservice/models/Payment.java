@@ -24,7 +24,7 @@ public class Payment {
     private String username;
 
     @Column(nullable = false)
-    private Long appointmentId;
+    private Integer appointmentId;
 
     @Lob
     @Column(nullable = false , columnDefinition = "LONGBLOB")

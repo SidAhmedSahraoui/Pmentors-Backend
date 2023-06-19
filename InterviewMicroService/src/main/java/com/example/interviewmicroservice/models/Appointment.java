@@ -17,7 +17,7 @@ public class Appointment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long appointmentId;
+    private Integer appointmentId;
 
     @Column(nullable = false)
     private String clientEmail;

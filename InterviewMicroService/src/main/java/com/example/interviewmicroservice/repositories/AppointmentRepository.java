@@ -11,7 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 
-public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
+public interface AppointmentRepository extends JpaRepository<Appointment, Integer> {
 
     @Query("select a from Appointment a where a.providerEmail = :email")
     List<Appointment> findAppointmentsByProviderEmail(@Param("email") String email);
@@ -36,5 +36,5 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     @Transactional
     @Modifying
     @Query("delete from Appointment a where a.appointmentId = :id")
-    int deleteByAppointmentId(@Param("id") Long id);
+    int deleteByAppointmentId(@Param("id") Integer id);
 }

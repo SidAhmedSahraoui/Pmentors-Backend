@@ -87,15 +87,15 @@ public class AppointmentController {
        }
     }
     @DeleteMapping("/appointments/{id}")
-    public ResponseEntity<Object> deleteAppointment(@PathVariable("id") Long id){
+    public ResponseEntity<Object> deleteAppointment(@PathVariable("id") Integer id){
         return appointmentService.deleteAppointment(id);
     }
         @PostMapping(value = "/payment", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
         public ResponseEntity<Object> payment(@RequestParam("file") MultipartFile file,
                                               @RequestParam("email") String email,
                                               @RequestParam("username") String username,
-                                              @RequestParam("appointmentId") Long appointmentId){
-        Appointment appointment = appointmentRepository.findById(appointmentId).orElseGet(() -> null);
+                                              @RequestParam("appointmentId") String appointmentId){
+        Appointment appointment = appointmentRepository.findById(Integer.parseInt(appointmentId)).orElseGet(() -> null);
             if (appointment != null){
             appointment.setIsPayed(true);
             Appointment savedAppointment = appointmentRepository.save(appointment);

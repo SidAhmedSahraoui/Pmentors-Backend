@@ -182,7 +182,7 @@ public class AppointmentService {
                     new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-    public ResponseEntity<Object> deleteAppointment(Long appointmentId){
+    public ResponseEntity<Object> deleteAppointment(Integer appointmentId){
         try {
             Appointment appointment = appointmentRepository.findById(appointmentId).get();
             appointmentRepository.deleteByAppointmentId(appointmentId);
