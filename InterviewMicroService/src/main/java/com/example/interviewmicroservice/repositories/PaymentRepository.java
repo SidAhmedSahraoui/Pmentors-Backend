@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.Optional;
 
-public interface PaymentRepository extends JpaRepository<Payment, Long> {
+public interface PaymentRepository extends JpaRepository<Payment, Integer> {
 
     @Query("select p from Payment p where p.appointmentId = ?1")
-    Optional<Payment> findByAppointmentId(Long id);
+    Optional<Payment> findByAppointmentId(Integer id);
 }

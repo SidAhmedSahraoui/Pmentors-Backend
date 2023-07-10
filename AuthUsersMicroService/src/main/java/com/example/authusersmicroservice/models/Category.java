@@ -16,7 +16,7 @@ public class Category {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long categoryId;
+    private Integer categoryId;
 
     @Column(nullable = false, unique = true)
     private String title;
@@ -25,7 +25,7 @@ public class Category {
     private String description;
 
     @Column(nullable = false)
-    private String type;
+    private CategoryType type;
 
     @Column(nullable = false)
     private Space space;

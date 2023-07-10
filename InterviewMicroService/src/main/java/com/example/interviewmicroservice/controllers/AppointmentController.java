@@ -16,6 +16,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,6 +39,7 @@ public class AppointmentController {
     private final ProviderRepository providerRepository;
     private final AppointmentRepository appointmentRepository;
     private final PaymentRepository paymentRepository;
+    private final MoreInfoRepository moreInfoRepository;
 
     @GetMapping("/{id}")
     public ResponseEntity<Object> getPlanning(@PathVariable("id") String username){
@@ -90,6 +92,21 @@ public class AppointmentController {
     public ResponseEntity<Object> deleteAppointment(@PathVariable("id") Integer id){
         return appointmentService.deleteAppointment(id);
     }
+
+    @GetMapping("/appointment/{id}")
+    public ResponseEntity<Object> getAppointment(@PathVariable("id") Integer id){
+        try {
+            Appointment appointment = appointmentRepository.findById(id).get();
+            return new ResponseEntity<Object>(
+                    appointment,
+                    new HttpHeaders(), HttpStatus.OK
+            );
+        } catch (Exception e){
+            return new ResponseEntity<Object>(
+                    new ApiResponse(HttpStatus.NOT_FOUND, "Appointment not found"),
+                    new HttpHeaders(), HttpStatus.NOT_FOUND);
+        }
+    }
         @PostMapping(value = "/payment", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
         public ResponseEntity<Object> payment(@RequestParam("file") MultipartFile file,
                                               @RequestParam("email") String email,
@@ -124,7 +141,8 @@ public class AppointmentController {
                 new HttpHeaders(), HttpStatus.NOT_FOUND);
     }
     @GetMapping("/download/{id}")
-    public ResponseEntity<Resource> downloadImage(@PathVariable Long id) {
+    @Transactional
+    public ResponseEntity<Resource> downloadImage(@PathVariable Integer id) {
         // Retrieve the image entity from the database
         Payment payment = paymentRepository.findByAppointmentId(id)
                 .orElseThrow(() -> new NotFoundException("Payment not found"));
@@ -138,6 +156,66 @@ public class AppointmentController {
                 .contentLength(resource.contentLength())
                 .body(resource);
     }
+
+    @PostMapping(value = "/info", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<Object> addMoreInfo(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam("domain") String domain,
+            @RequestParam("description") String description,
+            @RequestParam("appointmentId") String appointmentId) {
+
+            try{
+                Appointment appointment = appointmentRepository.findById(Integer.parseInt(appointmentId)).orElseGet(() -> null);
+                if(appointment != null) {
+                    byte[] data = file.getBytes();
+                    MoreInfo moreInfo = MoreInfo.builder()
+                            .moreInfoId(null)
+                            .appointmentId(appointment.getAppointmentId())
+                            .domain(domain)
+                            .description(description)
+                            .file(data)
+                            .build();
+                    moreInfoRepository.save(moreInfo);
+                    return new ResponseEntity<Object>(
+                            new ApiResponse(HttpStatus.OK, "More info added"),
+                            new HttpHeaders(), HttpStatus.OK);
+                } else {
+                    return new ResponseEntity<Object>(
+                            new ApiResponse(HttpStatus.NOT_FOUND, "Appointment not found"),
+                            new HttpHeaders(), HttpStatus.NOT_FOUND);
+                }
+
+            } catch (Exception e){
+                return new ResponseEntity<Object>(
+                        new ApiResponse(HttpStatus.NOT_FOUND, "Appointment not found"),
+                        new HttpHeaders(), HttpStatus.NOT_FOUND);
+            }
+    }
+
+
+    @GetMapping("/info/{id}")
+    @Transactional
+    public ResponseEntity<Resource> downloadInfo(@PathVariable Integer id) {
+        try {
+            // Retrieve the image entity from the database
+            MoreInfo moreInfo = moreInfoRepository.findByAppointmentId(id)
+                    .orElseThrow(() -> new NotFoundException("More info not found"));
+
+            // Create a ByteArrayResource from the image data
+            ByteArrayResource resource = new ByteArrayResource(moreInfo.getFile());
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=image.jpg")
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .contentLength(resource.contentLength())
+                    .body(resource);
+        } catch (Exception e){
+            return new ResponseEntity<Resource>(HttpStatus.NOT_FOUND);
+
+        }
+    }
+
+
 
     @GetMapping("/get-token")
     public String getToken() {

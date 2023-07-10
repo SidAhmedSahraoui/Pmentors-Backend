@@ -20,7 +20,7 @@ public class Notification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long notificationId;
+    private Integer notificationId;
 
     private String clientEmail;
     private String message;

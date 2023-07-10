@@ -18,7 +18,7 @@ public class Provider {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long providerId;
+    private Integer providerId;
 
     private String email;
     private String username;

@@ -7,7 +7,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
-public interface ClientRepository extends JpaRepository<Client, Long> {
+public interface ClientRepository extends JpaRepository<Client, Integer> {
 
     @Query("select c from Client c where c.email = :email")
     Optional<Client> findClientByEmail(@Param("email") String email);

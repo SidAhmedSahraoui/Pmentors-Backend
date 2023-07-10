@@ -21,7 +21,7 @@ import java.util.List;
 public class User implements Serializable, UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long userId;
+    private Integer userId;
 
     @Column(unique = true, nullable = false)
     private String username;

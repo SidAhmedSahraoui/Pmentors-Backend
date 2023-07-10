@@ -17,16 +17,16 @@ spring:
   servlet:
     multipart:
       enabled: true
-      max-file-size: 10MB
-      max-request-size: 10MB
+      max-file-size: 100MB
+      max-request-size: 100MB
   application:
     name: Interview-Service
   main:
     allow-bean-definition-overriding: true
   datasource:
-    url: jdbc:postgresql://host.docker.internal:5432/interviews
-    username: my_user
-    password: my_password
+    url: jdbc:postgresql://localhost:5432/interviews
+    username: root
+    password: root
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:

@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 public class MessageConsume {
-    private Long userId;
+    private Integer userId;
     private String email;
     private String username;
 }

@@ -20,9 +20,9 @@ spring:
   main:
     allow-bean-definition-overriding: true
   datasource:
-    url: jdbc:postgresql://host.docker.internal:5432/auth_users
-    username: my_user
-    password: my_password
+    url: jdbc:postgresql://localhost:5432/auth_users
+    username: root
+    password: root
     driver-class-name: org.postgresql.Driver
   kafka:
     bootstrap-servers: localhost:9092

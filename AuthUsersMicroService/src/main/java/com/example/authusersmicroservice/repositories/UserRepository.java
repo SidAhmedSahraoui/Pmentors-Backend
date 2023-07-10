@@ -15,9 +15,12 @@ import java.util.Optional;
 
 @Transactional
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, Integer> {
 
-    User findUserByUserId(Long id);
+    @Query("select count(*) from User")
+    Integer countUsers();
+
+    User findUserByUserId(Integer id);
     Optional<User> findByEmail(String email);
     Optional<User> findByUsername(String username);
     @Query("select u from User u where u.email = ?1 or u.username = ?1 or u.phone = ?1")

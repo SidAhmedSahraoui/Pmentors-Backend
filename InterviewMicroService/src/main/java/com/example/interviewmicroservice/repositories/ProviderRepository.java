@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface ProviderRepository extends JpaRepository<Provider, Long> {
+public interface ProviderRepository extends JpaRepository<Provider, Integer> {
 
         @Query("select (count(p) > 0) from Provider p where p.email = :email")
         Boolean existsByEmail(@Param("email") String email);

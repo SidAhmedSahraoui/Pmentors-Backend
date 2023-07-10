@@ -29,20 +29,20 @@ public class KafkaListeners {
                         .time(data.getTime())
                         .date(data.getDate())
                         .build();
-        /*Twilio.init("AC6cae1612a8df038d4ae48d68a8e3e466",
+        Twilio.init("AC6cae1612a8df038d4ae48d68a8e3e466",
                 "89d4d4650f9eb684dd8d8b2cabc3ee7c");
         Message.creator(new PhoneNumber("+213655649000"),
-                new PhoneNumber("+16202979623"), "Hello Sid Ahmed, you have a new appointment 📞").create();*/
+                new PhoneNumber("+16202979623"), "Hello Sid Ahmed, you have a new appointment 📞").create();
         notificationRepository.save(notification);
         System.out.println("Listener received: " + data + " ");
     }
 
     @KafkaListener(topics = "topicNotificationCancel", groupId = "groupId5", containerGroup = "messageFactory")
     void listener2(MessageRequest data) {
-        /*Twilio.init("AC6cae1612a8df038d4ae48d68a8e3e466",
+        Twilio.init("AC6cae1612a8df038d4ae48d68a8e3e466",
                 "89d4d4650f9eb684dd8d8b2cabc3ee7c");
         Message.creator(new PhoneNumber("+213655649000"),
-                new PhoneNumber("+16202979623"), "Hello Sid Ahmed, you have one appointment canceled by: " + data.getClientEmail()).create();*/
+                new PhoneNumber("+16202979623"), "Hello Sid Ahmed, you have one appointment canceled by: " + data.getClientEmail()).create();
         System.out.println("Listener received: " + data + " ");
     }
 }

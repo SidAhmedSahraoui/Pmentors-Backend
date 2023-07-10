@@ -5,29 +5,23 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Type;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @Entity
-@Table(name="payments")
-public class Payment {
+@Table(name = "more_info")
+public class MoreInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer paymentId;
+    private Integer moreInfoId;
 
-    @Column(nullable = false)
-    private String email;
-
-    @Column(nullable = false)
-    private String username;
-
-    @Column(nullable = false)
     private Integer appointmentId;
 
+    private String domain;
+    private String description;
+
     @Lob
-    @Column(nullable = false)
     private byte[] file;
 }

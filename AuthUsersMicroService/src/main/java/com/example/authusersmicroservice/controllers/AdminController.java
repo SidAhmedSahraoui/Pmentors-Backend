@@ -3,6 +3,9 @@ package com.example.authusersmicroservice.controllers;
 import com.example.authusersmicroservice.DTOs.CategoryRequest;
 import com.example.authusersmicroservice.DTOs.CreateProviderRequest;
 import com.example.authusersmicroservice.DTOs.UpgradeProviderRequest;
+import com.example.authusersmicroservice.models.Space;
+import com.example.authusersmicroservice.repositories.AdminRepository;
+import com.example.authusersmicroservice.repositories.CategoryRepository;
 import com.example.authusersmicroservice.services.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 public class AdminController {
     @Autowired
     private final AdminService adminService;
+    @Autowired
+    private final CategoryRepository categoryRepository;
 
 
     @PostMapping("/create-provider")
@@ -43,7 +48,7 @@ public class AdminController {
     }
 
     @PatchMapping("/edit-category/{id}")
-    public  ResponseEntity<Object> editCategory(@PathVariable(value = "id")  Long categoryId,
+    public  ResponseEntity<Object> editCategory(@PathVariable(value = "id")  Integer categoryId,
                                                 @RequestBody CategoryRequest request){
 
         return adminService.editCategory(categoryId,request);
@@ -67,5 +72,29 @@ public class AdminController {
     @GetMapping("/admins")
     public ResponseEntity<Object> getAllAdmins(){
         return adminService.getAllAdmins();
+    }
+
+    @GetMapping("/count/{id}")
+    public Integer countUsersByRoles(@PathVariable(value = "id") Integer id){
+        return adminService.getNumberOfUsersByRole(id);
+    }
+    @GetMapping("/count/space/{id}")
+    public Integer countCategoriesBySpace(@PathVariable(value = "id") Integer id){
+       try{
+           if(id == 1){
+               return categoryRepository.countAllBySpace(Space.INTERVIEW);
+           }
+           if (id == 2){
+               return categoryRepository.countAllBySpace(Space.CONSULTATION);
+           }
+              if (id == 3){
+                return categoryRepository.countAllBySpace(Space.SHARING_EXPERIENCE);
+              }
+
+       } catch (Exception e){
+           return 0;
+       }
+       return 0;
+
     }
 }

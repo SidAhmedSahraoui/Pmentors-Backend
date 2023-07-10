@@ -51,7 +51,7 @@ public class AuthUsersMicroServiceApplication implements CommandLineRunner {
                                 "Entretien Campus France",
                                 "Pratiquez l'entretien Campus France avec nos experts n'hésitez plus ! réservez maintenant un entretien 1: 1, " +
                                         "vous pouvez également réserver un entretien avec un expert pour vous aider à préparer votre dossier de candidature.",
-                                "study",
+                                CategoryType.STUDY,
                                 Space.INTERVIEW,
                                 null));
         Category category2 =
@@ -61,7 +61,7 @@ public class AuthUsersMicroServiceApplication implements CommandLineRunner {
                                 "Assurez-vous d'avoir les connaissances nécessaires pour obtenir " +
                                         "votre premier emploi en tant qu'ingénieur frontend et grandir dans " +
                                         "votre première étape dans le domaine informatique",
-                                "hiring",
+                                CategoryType.HIRING,
                                 Space.INTERVIEW,
 
                                 null));
@@ -72,7 +72,7 @@ public class AuthUsersMicroServiceApplication implements CommandLineRunner {
                                 "Backend Developer Interview",
                                 "Pratiquer toutes les questions de compétences backend," +
                                         "de la conception de l'API à la mise en œuvre et aux meilleures pratiques, Java, SQL ...",
-                                "hiring",
+                                CategoryType.HIRING,
                                 Space.INTERVIEW,
                                 null));
 
@@ -81,7 +81,7 @@ public class AuthUsersMicroServiceApplication implements CommandLineRunner {
                         new Category(null,
                                 "Study in Canada",
                                 "Choisissez le pays et l'université : Renseignez-vous sur les différents pays et les universités qui offrent les programmes d'études qui vous intéressent. Considérez des facteurs tels que la réputation académique, les frais de scolarité, etc.",
-                                "study",
+                                CategoryType.STUDY,
                                 Space.INTERVIEW,
                                 null));
         Category category5 =
@@ -89,7 +89,47 @@ public class AuthUsersMicroServiceApplication implements CommandLineRunner {
                         new Category(null,
                                  "Study in Turkey",
                                 "Préparez les documents nécessaires : Rassemblez les documents requis pour votre candidature, tels que les relevés de notes, les lettres de recommandation, les essais personnels, etc. Vérifiez les exigences spécifiques de chaque université.",
-                                "study",
+                                CategoryType.STUDY,
+                                Space.INTERVIEW,
+                                null));
+        Category category6 =
+                categoryRepository.save(
+                        new Category(null,
+                                "Ecole supérieure de l'hôtellerie et la restauration",
+                                "Préparez les documents nécessaires : Rassemblez les documents requis pour votre candidature, tels que les relevés de notes, les lettres de recommandation, les essais personnels, etc. Vérifiez les exigences spécifiques de chaque université.",
+                                CategoryType.STUDY,
+                                Space.INTERVIEW,
+                                null));
+        Category category7 =
+                categoryRepository.save(
+                        new Category(null,
+                                "Ecole supérieure de tourisme",
+                                "Préparez les documents nécessaires : Rassemblez les documents requis pour votre candidature, tels que les relevés de notes, les lettres de recommandation, les essais personnels, etc. Vérifiez les exigences spécifiques de chaque université.",
+                                CategoryType.STUDY,
+                                Space.INTERVIEW,
+                                null));
+        Category category8 =
+                categoryRepository.save(
+                        new Category(null,
+                                "Part time designer job",
+                                "Préparez les documents nécessaires : Rassemblez les documents requis pour votre candidature, tels que les relevés de notes, les lettres de recommandation, les essais personnels, etc. Vérifiez les exigences spécifiques de chaque université.",
+                                CategoryType.PART_TIME,
+                                Space.INTERVIEW,
+                                null));
+        Category category9 =
+                categoryRepository.save(
+                        new Category(null,
+                                "Part time video editor job",
+                                "Préparez les documents nécessaires : Rassemblez les documents requis pour votre candidature, tels que les relevés de notes, les lettres de recommandation, les essais personnels, etc. Vérifiez les exigences spécifiques de chaque université.",
+                                CategoryType.STUDY,
+                                Space.INTERVIEW,
+                                null));
+        Category category10 =
+                categoryRepository.save(
+                        new Category(null,
+                                "Internship in Canada",
+                                "Préparez les documents nécessaires : Rassemblez les documents requis pour votre candidature, tels que les relevés de notes, les lettres de recommandation, les essais personnels, etc. Vérifiez les exigences spécifiques de chaque université.",
+                                CategoryType.TRAINING,
                                 Space.INTERVIEW,
                                 null));
             User savedAdmin = userRepository.save(

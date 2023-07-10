@@ -25,17 +25,17 @@ public class UserController {
     }
 
     @PatchMapping("/update/{id}")
-    public ResponseEntity<Object> updateInfo(@PathVariable(value = "id") Long userId,
+    public ResponseEntity<Object> updateInfo(@PathVariable(value = "id") Integer userId,
                                              @RequestBody UpdateInfoRequest request){
         return service.updateInfo(request, userId);
     }
     @DeleteMapping("/delete/{id}")
-    public  ResponseEntity<Object> deleteUser(@PathVariable(value = "id") Long userId,
+    public  ResponseEntity<Object> deleteUser(@PathVariable(value = "id") Integer userId,
                                               @RequestBody DeleteUserRequest request){
         return  service.deleteUser(request, userId);
     }
     @GetMapping("/profile/{id}")
-    public ResponseEntity<Object> getProfile(@PathVariable(value = "id") Long userId){
+    public ResponseEntity<Object> getProfile(@PathVariable(value = "id") Integer userId){
         return service.getProfile(userId);
     }
 
@@ -45,11 +45,11 @@ public class UserController {
     }
 
     @GetMapping("/category/{id}/providers")
-    public ResponseEntity<Object> getProvidersByCategory(@PathVariable(value = "id") Long categoryId){
+    public ResponseEntity<Object> getProvidersByCategory(@PathVariable(value = "id") Integer categoryId){
         return service.getProvidersByCategory(categoryId);
     }
     @GetMapping("/category/{id}/")
-    public ResponseEntity<Object> getCategoryById(@PathVariable(value = "id") Long categoryId){
+    public ResponseEntity<Object> getCategoryById(@PathVariable(value = "id") Integer categoryId){
         return service.getCategoryById(categoryId);
     }
 }

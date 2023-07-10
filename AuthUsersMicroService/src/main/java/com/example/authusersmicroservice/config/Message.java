@@ -7,7 +7,7 @@ import lombok.*;
 @Builder
 public class Message {
 
-    private Long userId;
+    private Integer userId;
     private String email;
     private String username;
 

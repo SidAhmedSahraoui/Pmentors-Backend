@@ -55,20 +55,6 @@ services:
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
       - POSTGRES_DB=default_db
-    command: >
-      bash -c '
-        /docker-entrypoint.sh postgres &
-        until pg_isready -h localhost -U my_user; do
-          echo "Waiting for PostgreSQL to start..."
-          sleep 1
-        done
-        psql -h localhost -U my_user -c "CREATE DATABASE auth_users;"
-        psql -h localhost -U my_user -c "CREATE DATABASE interviews;"
-        psql -h localhost -U my_user -c "CREATE DATABASE notifications;"
-        psql -h localhost -U my_user -d auth_users -f /path/to/auth_users.sql
-        psql -h localhost -U my_user -d interviews -f /path/to/interviews.sql
-        psql -h localhost -U my_user -d notifications -f /path/to/notifications.sql
-        exec /docker-entrypoint.sh postgres'
 
   pgadmin:
     image: dpage/pgadmin4:latest

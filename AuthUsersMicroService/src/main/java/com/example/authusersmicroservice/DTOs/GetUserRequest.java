@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class GetUserRequest {
-    private Long userId;
+    private Integer userId;
     private String token;
 }

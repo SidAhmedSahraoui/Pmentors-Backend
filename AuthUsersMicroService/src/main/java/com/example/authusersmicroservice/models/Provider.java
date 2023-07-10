@@ -14,7 +14,7 @@ public class Provider {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long providerId;
+    private Integer providerId;
 
     @OneToOne
     private User user;

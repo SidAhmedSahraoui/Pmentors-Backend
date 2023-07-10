@@ -10,7 +10,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-public interface ProviderRepository extends JpaRepository<Provider, Long> {
+public interface ProviderRepository extends JpaRepository<Provider, Integer> {
+
+    @Query("select count(*) from Provider")
+    Integer countProviders();
+
     @Query("select (count(p) > 0) from Provider p where p.user = :user")
     boolean existsByUser(@Param("user") User user);
     @Transactional

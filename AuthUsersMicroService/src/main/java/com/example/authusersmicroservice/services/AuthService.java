@@ -171,7 +171,7 @@ public class AuthService {
             return new ResponseEntity<Object>(new ApiResponse(HttpStatus.BAD_REQUEST, "Password not correct"), new HttpHeaders(), HttpStatus.BAD_REQUEST);
         }
     }
-    public ResponseEntity<Object> updateInfo(UpdateInfoRequest request, Long userId) {
+    public ResponseEntity<Object> updateInfo(UpdateInfoRequest request, Integer userId) {
         ArrayList<String> errors = new ArrayList<>();
         if(repository.existsById(userId)){
             User user = repository.findById(userId).get();
@@ -234,7 +234,7 @@ public class AuthService {
             return new ResponseEntity<Object>(new ApiResponse(HttpStatus.NOT_FOUND, "User not found"), new HttpHeaders(), HttpStatus.NOT_FOUND);
         }
     }
-    public ResponseEntity<Object> deleteUser(DeleteUserRequest request, Long userId) {
+    public ResponseEntity<Object> deleteUser(DeleteUserRequest request, Integer userId) {
         if(repository.existsById(userId)) {
             User user = repository.findById(userId).get();
             if(passwordEncoder.matches(request.getPassword(), user.getPassword())){
@@ -256,7 +256,7 @@ public class AuthService {
         return new ResponseEntity<Object>(new ApiResponse(HttpStatus.NOT_FOUND, "User not found"), new HttpHeaders(), HttpStatus.NOT_FOUND);
     }
 
-    public ResponseEntity<Object> getProfile(Long userId) {
+    public ResponseEntity<Object> getProfile(Integer userId) {
         if(repository.existsById(userId)) {
             try {
                 User user = repository.findUserByUserId(userId);
@@ -315,7 +315,7 @@ public class AuthService {
         }
     }
 
-    public ResponseEntity<Object> getProvidersByCategory(Long categoryId) {
+    public ResponseEntity<Object> getProvidersByCategory(Integer categoryId) {
         if(categoryRepository.existsById(categoryId)) {
             try {
                 Collection<Provider> providers = categoryRepository.findById(categoryId).get().getProviders();
@@ -330,7 +330,7 @@ public class AuthService {
         }
     }
 
-    public ResponseEntity<Object> getCategoryById(Long categoryId) {
+    public ResponseEntity<Object> getCategoryById(Integer categoryId) {
         if(categoryRepository.existsById(categoryId)) {
             try {
                 var category = categoryRepository.findById(categoryId).get();

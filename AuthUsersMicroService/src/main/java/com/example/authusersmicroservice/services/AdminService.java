@@ -205,7 +205,6 @@ public class AdminService {
         }
         var category = Category.builder()
                 .title(request.getTitle())
-                .type(request.getType())
                 .description(request.getDescription())
                 .build();
 
@@ -218,6 +217,17 @@ public class AdminService {
         } else {
             return new ResponseEntity<Object>(new ApiResponse(HttpStatus.BAD_REQUEST, "Space not found"), new HttpHeaders(), HttpStatus.BAD_REQUEST);
         }
+        if(request.getType() == 0){
+            category.setType(CategoryType.HIRING);
+        } else if (request.getType() == 1) {
+            category.setType(CategoryType.STUDY);
+        } else if (request.getType() == 2){
+            category.setType(CategoryType.TRAINING);
+        } else if (request.getType() == 3){
+            category.setType(CategoryType.PART_TIME);
+        } else {
+            category.setType(CategoryType.OTHER);
+        }
 
         try {
             categoryRepository.save(category);
@@ -228,7 +238,7 @@ public class AdminService {
 
     }
 
-    public ResponseEntity<Object> editCategory(Long categoryId,CategoryRequest request){
+    public ResponseEntity<Object> editCategory(Integer categoryId,CategoryRequest request){
         if(!categoryRepository.existsById(categoryId)){
             return new ResponseEntity<Object>(new ApiResponse(HttpStatus.NOT_FOUND, "Category not found"), new HttpHeaders(), HttpStatus.NOT_FOUND);
         }
@@ -294,6 +304,38 @@ public class AdminService {
         }catch (Exception e){
             System.out.println(e);
             return new ResponseEntity<Object>(new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Unknown error"), new HttpHeaders(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    public Integer getNumberOfUsersByRole(Integer id){
+        try {
+            if (id == 1) {
+                return userRepository.countUsers();
+            }
+            if (id == 2) {
+                return providerRepository.countProviders();
+            }
+            if (id == 3) {
+                return adminRepository.countAdmins();
+            }
+            if (id == 4) {
+                return categoryRepository.countAllByType(CategoryType.HIRING);
+            }
+            if (id == 5) {
+                return categoryRepository.countAllByType(CategoryType.STUDY);
+            }
+            if (id == 6) {
+                return categoryRepository.countAllByType(CategoryType.TRAINING);
+            }
+            if (id == 7) {
+                return categoryRepository.countAllByType(CategoryType.PART_TIME);
+            }
+            if (id == 8) {
+                return categoryRepository.countAllByType(CategoryType.OTHER);
+            }
+            return 0;
+
+        } catch (Exception e){
+            return 0;
         }
     }
 

@@ -12,7 +12,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
-public interface TokenRepository extends JpaRepository<Token, Long> {
+public interface TokenRepository extends JpaRepository<Token, Integer> {
 
 
     @Query(value = """
@@ -20,7 +20,7 @@ public interface TokenRepository extends JpaRepository<Token, Long> {
       on t.user.userId = u.userId\s
       where u.userId = :id and (t.expired = false or t.revoked = false)\s
       """)
-    List<Token> findAllValidTokenByUser(Long id);
+    List<Token> findAllValidTokenByUser(Integer id);
 
     @Query("select t from Token t where t.token = ?1")
     Optional<Token> findByToken(String token);
