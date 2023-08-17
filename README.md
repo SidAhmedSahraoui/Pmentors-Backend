@@ -19,10 +19,3 @@ follow this instructions :
 <code>bin/kafka-server-start.sh config/server.properties</code>
 3. Verify the content of topic : 
 <code>bin/kafka-console-consumer.sh --topic quickstart-events --from-beginning --bootstrap-server localhost:9092</code>
-### How to use
-
-1. Clone/Download the repo.
-2. Install dependencies:
-   <code>reload project from pom.xml</code> or <code>mvn install</code>
-3. Run.
-4. You are ready [http://localhost:7777](http://localhost:7777)
